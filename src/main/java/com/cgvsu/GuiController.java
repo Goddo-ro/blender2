@@ -23,7 +23,7 @@ import com.cgvsu.render_engine.Camera;
 
 public class GuiController {
 
-    final private float TRANSLATION = 0.5F;
+    final private float TRANSLATION = 1.5F;
 
     @FXML
     AnchorPane anchorPane;
