@@ -1,16 +1,20 @@
 package com.cgvsu;
 
 import com.cgvsu.render_engine.RenderEngine;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
@@ -21,11 +25,14 @@ import java.io.IOException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.vecmath.Vector3f;
 
 import com.cgvsu.model.Model;
 import com.cgvsu.objreader.ObjReader;
 import com.cgvsu.render_engine.Camera;
+
+import static com.cgvsu.utils.StringUtils.generateUniqueName;
 
 public class GuiController {
 
@@ -63,21 +70,59 @@ public class GuiController {
 
     private Timeline timeline;
 
+    EventHandler<MouseEvent> modelClickHandler = (MouseEvent event) -> {
+        if (!event.getPickResult().getIntersectedNode().getParent().toString().contains("'")) {
+            return;
+        }
+
+        String name = event.getPickResult().getIntersectedNode().getParent().toString().split("'")[1];
+        if (!name.endsWith(".obj")) {
+            return;
+        }
+
+        if (Objects.equals(event.getButton().toString(), "SECONDARY")) {
+            double sceneX = event.getSceneX();
+            double sceneY = event.getSceneY();
+
+            Button saveBtn = new Button("Save");
+            saveBtn.setAlignment(Pos.BASELINE_LEFT);
+            saveBtn.setPrefWidth(100);
+
+            TilePane pane = new TilePane(saveBtn);
+            pane.setLayoutX(sceneX);
+            pane.setLayoutY(sceneY);
+
+            anchorPane.getChildren().add(pane);
+
+            pane.addEventHandler(MouseEvent.MOUSE_EXITED, (MouseEvent exitedEvent) -> {
+                anchorPane.getChildren().remove(pane);
+            });
+
+            saveBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent clickEvent) -> {
+                System.out.println("Saving!");
+                anchorPane.getChildren().remove(pane);
+            });
+        }
+    };
+
     private void updateModels() {
         TreeItem<String> modelsNode = new TreeItem<>("Models");
         for (Model model : modelsList) {
-            modelsNode.getChildren().add(new TreeItem<>(model.getName()));
+            TreeItem<String> modelItem = new TreeItem<>(model.getName());
+            modelsNode.getChildren().add(modelItem);
         }
 
         models.getRoot().getChildren().remove(0);
         models.getRoot().getChildren().add(modelsNode);
         expandTreeView(models.getRoot());
+
+        models.addEventHandler(MouseEvent.MOUSE_CLICKED, modelClickHandler);
     }
 
-    private void expandTreeView(TreeItem<?> item){
-        if(item != null && !item.isLeaf()){
+    private void expandTreeView(TreeItem<?> item) {
+        if (item != null && !item.isLeaf()) {
             item.setExpanded(true);
-            for(TreeItem<?> child:item.getChildren()){
+            for (TreeItem<?> child : item.getChildren()) {
                 expandTreeView(child);
             }
         }
@@ -91,6 +136,15 @@ public class GuiController {
 
         MultipleSelectionModel<TreeItem<String>> selectionModel = models.getSelectionModel();
         selectionModel.setSelectionMode(SelectionMode.MULTIPLE);
+    }
+
+    private List<String> getModelsName() {
+        List<String> names = new ArrayList<>();
+        for (Model model : modelsList) {
+            names.add(model.getName());
+        }
+
+        return names;
     }
 
     @FXML
@@ -140,7 +194,7 @@ public class GuiController {
         try {
             String fileContent = Files.readString(fileName);
             mesh = ObjReader.read(fileContent);
-            mesh.setName(file.getName());
+            mesh.setName(generateUniqueName(file.getName(), getModelsName()));
             modelsList.add(mesh);
             updateModels();
             // todo: обработка ошибок
