@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class StringUtils {
+    // TODO: fix bags
     public static String generateUniqueName(String input, List<String> existingNames) {
         if (!existingNames.contains(input)) {
             // Если данное название не существует, просто вернуть его

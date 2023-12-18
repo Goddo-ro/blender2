@@ -1,5 +1,6 @@
 package com.cgvsu;
 
+import com.cgvsu.objwriter.ObjWriter;
 import com.cgvsu.render_engine.RenderEngine;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -19,6 +20,8 @@ import javafx.stage.Stage;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.io.IOException;
@@ -95,12 +98,14 @@ public class GuiController {
             anchorPane.getChildren().add(pane);
 
             pane.addEventHandler(MouseEvent.MOUSE_EXITED, (MouseEvent exitedEvent) -> {
-                anchorPane.getChildren().remove(pane);
+                if (anchorPane.getChildren().contains(pane)) {
+                    anchorPane.getChildren().remove(pane);
+                }
             });
 
             saveBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent clickEvent) -> {
-                System.out.println("Saving!");
-                anchorPane.getChildren().remove(pane);
+                pane.setOpacity(0);
+                saveModel(Objects.requireNonNull(getModelByName(name)));
             });
         }
     };
@@ -145,6 +150,35 @@ public class GuiController {
         }
 
         return names;
+    }
+
+    private Model getModelByName(String name) {
+        for (Model model : modelsList) {
+            if (model.getName().equals(name))
+                return model;
+        }
+
+        return null;
+    }
+
+    private void saveModel(Model model) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Model (*.obj)", "*.obj"));
+        fileChooser.setTitle("Save Model");
+
+        fileChooser.setInitialFileName(model.getName());
+
+        File selectedFile = fileChooser.showSaveDialog(canvas.getScene().getWindow());
+
+        if (selectedFile != null) {
+            try {
+                ObjWriter.write(model, selectedFile.getAbsolutePath());
+                System.out.println(selectedFile.getAbsolutePath());
+                // todo: обработка ошибок
+            } catch (IOException e) {
+            }
+        }
+
     }
 
     @FXML
