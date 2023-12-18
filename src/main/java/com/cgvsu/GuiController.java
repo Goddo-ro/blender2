@@ -64,15 +64,33 @@ public class GuiController {
     private Timeline timeline;
 
     private void updateModels() {
-        TreeItem<String> modelsNode = new TreeItem<String>("Models");
-        int c = 0;
-        for (Model m : modelsList) {
-            modelsNode.getChildren().add(new TreeItem<String>(String.valueOf(c)));
-            c++;
+        TreeItem<String> modelsNode = new TreeItem<>("Models");
+        for (Model model : modelsList) {
+            modelsNode.getChildren().add(new TreeItem<>(model.getName()));
         }
 
         models.getRoot().getChildren().remove(0);
         models.getRoot().getChildren().add(modelsNode);
+        expandTreeView(models.getRoot());
+    }
+
+    private void expandTreeView(TreeItem<?> item){
+        if(item != null && !item.isLeaf()){
+            item.setExpanded(true);
+            for(TreeItem<?> child:item.getChildren()){
+                expandTreeView(child);
+            }
+        }
+    }
+
+    private void initializeModels() {
+        TreeItem<String> rootTreeNode = new TreeItem<>("Objects");
+        TreeItem<String> modelsNode = new TreeItem<>("Models");
+        rootTreeNode.getChildren().add(modelsNode);
+        models.setRoot(rootTreeNode);
+
+        MultipleSelectionModel<TreeItem<String>> selectionModel = models.getSelectionModel();
+        selectionModel.setSelectionMode(SelectionMode.MULTIPLE);
     }
 
     @FXML
@@ -88,15 +106,7 @@ public class GuiController {
 
         toggleMenu.setPrefWidth(OPENED_MENU_WIDTH);
 
-        TreeItem<String> rootTreeNode = new TreeItem<String>("Objects");
-
-        TreeItem<String> modelsNode = new TreeItem<>("Models");
-        rootTreeNode.getChildren().add(modelsNode);
-
-        models.setRoot(rootTreeNode);
-
-//        modelsContainer.setCenter(langsTreeView);
-
+        initializeModels();
 
         KeyFrame frame = new KeyFrame(Duration.millis(15), event -> {
             double width = canvas.getWidth();
@@ -130,6 +140,7 @@ public class GuiController {
         try {
             String fileContent = Files.readString(fileName);
             mesh = ObjReader.read(fileContent);
+            mesh.setName(file.getName());
             modelsList.add(mesh);
             updateModels();
             // todo: обработка ошибок
@@ -144,9 +155,11 @@ public class GuiController {
             toggleMenu.setText("-");
             toggleMenu.setPrefWidth(OPENED_MENU_WIDTH);
             modelsContainer.setPrefWidth(OPENED_MENU_WIDTH);
+            models.setOpacity(1);
         } else {
             toggleMenu.setText("+");
             modelsContainer.setPrefWidth(CLOSED_MENU_WIDTH);
+            models.setOpacity(0);
         }
 
         isMenuClosed = !isMenuClosed;
