@@ -26,6 +26,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.vecmath.Vector3f;
 
 import com.cgvsu.model.Model;
@@ -59,6 +60,8 @@ public class GuiController {
     private final List<Model> modelsList = new ArrayList<>();
 
     private boolean isMenuClosed = false;
+
+    private MultipleSelectionModel<TreeItem<String>> selectionModel;
 
     private final int OPENED_MENU_WIDTH = 300;
     private final int CLOSED_MENU_WIDTH = 20;
@@ -130,16 +133,6 @@ public class GuiController {
         }
     }
 
-    private void initializeModels() {
-        TreeItem<String> rootTreeNode = new TreeItem<>("Objects");
-        TreeItem<String> modelsNode = new TreeItem<>("Models");
-        rootTreeNode.getChildren().add(modelsNode);
-        models.setRoot(rootTreeNode);
-
-        MultipleSelectionModel<TreeItem<String>> selectionModel = models.getSelectionModel();
-        selectionModel.setSelectionMode(SelectionMode.MULTIPLE);
-    }
-
     private List<String> getModelsName() {
         List<String> names = new ArrayList<>();
         for (Model model : modelsList) {
@@ -175,7 +168,29 @@ public class GuiController {
             } catch (IOException e) {
             }
         }
+    }
 
+    public List<TreeItem<String>> getSelectedModels() {
+        return selectionModel.getSelectedItems();
+    }
+
+    public boolean isModelActive(Model model) {
+        for (TreeItem<String> item : getSelectedModels()) {
+            if (item.getValue().equals(model.getName()))
+                return true;
+        }
+
+        return false;
+    }
+
+    private void initializeModels() {
+        TreeItem<String> rootTreeNode = new TreeItem<>("Objects");
+        TreeItem<String> modelsNode = new TreeItem<>("Models");
+        rootTreeNode.getChildren().add(modelsNode);
+        models.setRoot(rootTreeNode);
+
+        selectionModel = models.getSelectionModel();
+        selectionModel.setSelectionMode(SelectionMode.MULTIPLE);
     }
 
     @FXML
@@ -201,7 +216,7 @@ public class GuiController {
             camera.setAspectRatio((float) (width / height));
 
             for (Model model : modelsList) {
-                RenderEngine.render(canvas.getGraphicsContext2D(), camera, model, (int) width, (int) height);
+                RenderEngine.render(canvas.getGraphicsContext2D(), camera, model, (int) width, (int) height, isModelActive(model));
             }
         });
 
