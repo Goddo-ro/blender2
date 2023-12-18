@@ -7,14 +7,20 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.io.IOException;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import javax.vecmath.Vector3f;
 
 import com.cgvsu.model.Model;
@@ -28,17 +34,46 @@ public class GuiController {
     @FXML
     AnchorPane anchorPane;
 
+
     @FXML
     private Canvas canvas;
 
+    @FXML
+    private BorderPane modelsContainer;
+
+    @FXML
+    private Button toggleMenu;
+
+    @FXML
+    private TreeView<String> models;
+
     private Model mesh = null;
 
+    private final List<Model> modelsList = new ArrayList<>();
+
+    private boolean isMenuClosed = false;
+
+    private final int OPENED_MENU_WIDTH = 300;
+    private final int CLOSED_MENU_WIDTH = 20;
+
     private Camera camera = new Camera(
-            new Vector3f(0, 00, 100),
+            new Vector3f(0, 0, 100),
             new Vector3f(0, 0, 0),
             1.0F, 1, 0.01F, 100);
 
     private Timeline timeline;
+
+    private void updateModels() {
+        TreeItem<String> modelsNode = new TreeItem<String>("Models");
+        int c = 0;
+        for (Model m : modelsList) {
+            modelsNode.getChildren().add(new TreeItem<String>(String.valueOf(c)));
+            c++;
+        }
+
+        models.getRoot().getChildren().remove(0);
+        models.getRoot().getChildren().add(modelsNode);
+    }
 
     @FXML
     private void initialize() {
@@ -48,6 +83,21 @@ public class GuiController {
         timeline = new Timeline();
         timeline.setCycleCount(Animation.INDEFINITE);
 
+        modelsContainer.setLayoutX(canvas.getWidth() - modelsContainer.getWidth());
+        modelsContainer.setPrefWidth(OPENED_MENU_WIDTH);
+
+        toggleMenu.setPrefWidth(OPENED_MENU_WIDTH);
+
+        TreeItem<String> rootTreeNode = new TreeItem<String>("Objects");
+
+        TreeItem<String> modelsNode = new TreeItem<>("Models");
+        rootTreeNode.getChildren().add(modelsNode);
+
+        models.setRoot(rootTreeNode);
+
+//        modelsContainer.setCenter(langsTreeView);
+
+
         KeyFrame frame = new KeyFrame(Duration.millis(15), event -> {
             double width = canvas.getWidth();
             double height = canvas.getHeight();
@@ -55,8 +105,8 @@ public class GuiController {
             canvas.getGraphicsContext2D().clearRect(0, 0, width, height);
             camera.setAspectRatio((float) (width / height));
 
-            if (mesh != null) {
-                RenderEngine.render(canvas.getGraphicsContext2D(), camera, mesh, (int) width, (int) height);
+            for (Model model : modelsList) {
+                RenderEngine.render(canvas.getGraphicsContext2D(), camera, model, (int) width, (int) height);
             }
         });
 
@@ -80,10 +130,26 @@ public class GuiController {
         try {
             String fileContent = Files.readString(fileName);
             mesh = ObjReader.read(fileContent);
+            modelsList.add(mesh);
+            updateModels();
             // todo: обработка ошибок
         } catch (IOException exception) {
 
         }
+    }
+
+    @FXML
+    private void onMouseToggleMenuClick() {
+        if (isMenuClosed) {
+            toggleMenu.setText("-");
+            toggleMenu.setPrefWidth(OPENED_MENU_WIDTH);
+            modelsContainer.setPrefWidth(OPENED_MENU_WIDTH);
+        } else {
+            toggleMenu.setText("+");
+            modelsContainer.setPrefWidth(CLOSED_MENU_WIDTH);
+        }
+
+        isMenuClosed = !isMenuClosed;
     }
 
     @FXML
