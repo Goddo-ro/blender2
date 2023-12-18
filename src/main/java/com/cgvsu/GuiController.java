@@ -9,7 +9,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
@@ -20,8 +19,6 @@ import javafx.stage.Stage;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.io.IOException;
