@@ -1,7 +1,12 @@
 package com.cgvsu;
 
+import com.cgvsu.log.Log;
+import com.cgvsu.log.Statuses;
 import com.cgvsu.objwriter.ObjWriter;
 import com.cgvsu.render_engine.RenderEngine;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.animation.Animation;
@@ -17,8 +22,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.TilePane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
+import javafx.util.Callback;
 import javafx.util.Duration;
 
 import java.nio.file.Files;
@@ -29,12 +36,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.vecmath.Vector3f;
 
 import com.cgvsu.model.Model;
 import com.cgvsu.objreader.ObjReader;
 import com.cgvsu.render_engine.Camera;
 
+import static com.cgvsu.utils.LogsUtils.generateLabelFromLog;
+import static com.cgvsu.utils.LogsUtils.getLogColor;
 import static com.cgvsu.utils.StringUtils.generateUniqueName;
 
 public class GuiController {
@@ -52,21 +63,42 @@ public class GuiController {
     private BorderPane modelsContainer;
 
     @FXML
+    private BorderPane consoleContainer;
+
+    @FXML
+    private ScrollPane consoleScroll;
+
+    @FXML
     private Button toggleMenu;
 
     @FXML
+    private Button toggleConsoleBtn;
+
+    @FXML
     private TreeView<String> models;
+
+    @FXML
+    private AnchorPane consolePane;
+
+    @FXML
+    private VBox console;
 
     private Model mesh = null;
 
     private final List<Model> modelsList = new ArrayList<>();
 
     private boolean isMenuClosed = false;
+    private boolean isConsoleClosed = false;
 
     private MultipleSelectionModel<TreeItem<String>> selectionModel;
 
-    private final int OPENED_MENU_WIDTH = 300;
+    private final List<Log> logs = new ArrayList<>();
+
+    private final int OPENED_MENU_WIDTH = 350;
     private final int CLOSED_MENU_WIDTH = 20;
+
+    private final int OPENED_CONSOLE_HEIGHT = 350;
+    private final int CLOSED_CONSOLE_HEIGHT = 20;
 
     private Camera camera = new Camera(
             new Vector3f(0, 0, 100),
@@ -166,8 +198,9 @@ public class GuiController {
             try {
                 ObjWriter.write(model, selectedFile.getAbsolutePath());
                 System.out.println(selectedFile.getAbsolutePath());
-                // todo: обработка ошибок
-            } catch (IOException e) {
+                logs.add(new Log("Модель " + model.getName() + " успешно сохранена", Statuses.MESSAGE));
+            } catch (Exception exception) {
+                logs.add(new Log(exception.getMessage(), Statuses.ERROR));
             }
         }
     }
@@ -206,6 +239,15 @@ public class GuiController {
         selectionModel.setSelectionMode(SelectionMode.MULTIPLE);
     }
 
+    private void updateLogs() {
+        console.getChildren().clear();
+        for (Log log : logs) {
+            Label label = generateLabelFromLog(log);
+            console.getChildren().add(label);
+        }
+        // TODO: Scroll console to bottom
+    }
+
     @FXML
     private void initialize() {
         anchorPane.prefWidthProperty().addListener((ov, oldValue, newValue) -> canvas.setWidth(newValue.doubleValue()));
@@ -227,6 +269,20 @@ public class GuiController {
 
             canvas.getGraphicsContext2D().clearRect(0, 0, width, height);
             camera.setAspectRatio((float) (width / height));
+
+            toggleConsoleBtn.setPrefWidth(width);
+            consoleContainer.setPrefHeight(OPENED_CONSOLE_HEIGHT);
+            consoleScroll.setVmax(console.getHeight());
+            modelsContainer.setPrefHeight(canvas.getHeight() - OPENED_CONSOLE_HEIGHT + 1);
+
+            if (consolePane.getHeight() != console.getHeight()) {
+                consolePane.setPrefHeight(console.getHeight());
+            }
+
+
+            if (logs.size() != console.getChildren().size()) {
+                updateLogs();
+            }
 
             for (Model model : modelsList) {
                 RenderEngine.render(canvas.getGraphicsContext2D(), camera, model, (int) width, (int) height, isModelActive(model));
@@ -256,9 +312,9 @@ public class GuiController {
             mesh.setName(generateUniqueName(file.getName(), getModelsName()));
             modelsList.add(mesh);
             updateModels();
-            // todo: обработка ошибок
-        } catch (IOException exception) {
-
+            logs.add(new Log("Модель " + mesh.getName() + " успешно загружена", Statuses.MESSAGE));
+        } catch (Exception exception) {
+            logs.add(new Log(exception.getMessage(), Statuses.ERROR));
         }
     }
 
@@ -276,6 +332,23 @@ public class GuiController {
         }
 
         isMenuClosed = !isMenuClosed;
+    }
+
+    @FXML
+    private void onMouseToggleConsoleClick() {
+        if (isConsoleClosed) {
+            toggleConsoleBtn.setText("-");
+            consoleContainer.setMaxHeight(OPENED_CONSOLE_HEIGHT);
+            modelsContainer.setPrefHeight(canvas.getHeight() - OPENED_CONSOLE_HEIGHT + 1);
+            consoleScroll.setOpacity(1);
+        } else {
+            toggleConsoleBtn.setText("+");
+            consoleContainer.setMaxHeight(CLOSED_CONSOLE_HEIGHT);
+            modelsContainer.setMinHeight(canvas.getHeight() - CLOSED_CONSOLE_HEIGHT + 1);
+            consoleScroll.setOpacity(0);
+        }
+
+        isConsoleClosed = !isConsoleClosed;
     }
 
     @FXML
