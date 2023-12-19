@@ -11,6 +11,8 @@ import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -183,6 +185,17 @@ public class GuiController {
         return false;
     }
 
+    private void removeActiveModels() {
+        for (int i = 0; i < modelsList.size(); i++) {
+            if (isModelActive(modelsList.get(i))) {
+                modelsList.remove(i);
+                i--;
+            }
+        }
+
+        updateModels();
+    }
+
     private void initializeModels() {
         TreeItem<String> rootTreeNode = new TreeItem<>("Objects");
         TreeItem<String> modelsNode = new TreeItem<>("Models");
@@ -263,6 +276,13 @@ public class GuiController {
         }
 
         isMenuClosed = !isMenuClosed;
+    }
+
+    @FXML
+    private void onDelKeyClick(KeyEvent key) {
+        if (key.getCode() == KeyCode.DELETE) {
+            removeActiveModels();
+        }
     }
 
     @FXML
