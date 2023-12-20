@@ -2,17 +2,17 @@ package com.cgvsu;
 
 import com.cgvsu.log.Log;
 import com.cgvsu.log.Statuses;
+import com.cgvsu.model.Model;
+import com.cgvsu.objreader.ObjReader;
 import com.cgvsu.objwriter.ObjWriter;
+import com.cgvsu.render_engine.Camera;
 import com.cgvsu.render_engine.RenderEngine;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.fxml.FXML;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
@@ -23,29 +23,19 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import javafx.stage.FileChooser;
-import javafx.util.Callback;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import javax.vecmath.Vector3f;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.io.IOException;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.vecmath.Vector3f;
-
-import com.cgvsu.model.Model;
-import com.cgvsu.objreader.ObjReader;
-import com.cgvsu.render_engine.Camera;
 
 import static com.cgvsu.utils.LogsUtils.generateLabelFromLog;
-import static com.cgvsu.utils.LogsUtils.getLogColor;
 import static com.cgvsu.utils.StringUtils.generateUniqueName;
 
 public class GuiController {
@@ -63,16 +53,27 @@ public class GuiController {
     private BorderPane modelsContainer;
 
     @FXML
+    private BorderPane modelsManipulations;
+
+    @FXML
     private BorderPane consoleContainer;
 
     @FXML
     private ScrollPane consoleScroll;
+
+    @FXML ScrollPane manipulationsScroll;
 
     @FXML
     private Button toggleMenu;
 
     @FXML
     private Button toggleConsoleBtn;
+
+    @FXML
+    private Button toggleManipulations;
+
+    @FXML
+    private Button triangulateBtn;
 
     @FXML
     private TreeView<String> models;
@@ -89,6 +90,7 @@ public class GuiController {
 
     private boolean isMenuClosed = false;
     private boolean isConsoleClosed = false;
+    private boolean isManipulationsClosed = false;
 
     private MultipleSelectionModel<TreeItem<String>> selectionModel;
 
@@ -256,10 +258,9 @@ public class GuiController {
         timeline = new Timeline();
         timeline.setCycleCount(Animation.INDEFINITE);
 
-        modelsContainer.setLayoutX(canvas.getWidth() - modelsContainer.getWidth());
-        modelsContainer.setPrefWidth(OPENED_MENU_WIDTH);
-
-        toggleMenu.setPrefWidth(OPENED_MENU_WIDTH);
+        onMouseToggleConsoleClick();
+        onMouseToggleMenuClick();
+        onMouseToggleManipulationsClick();
 
         initializeModels();
 
@@ -271,9 +272,8 @@ public class GuiController {
             camera.setAspectRatio((float) (width / height));
 
             toggleConsoleBtn.setPrefWidth(width);
-            consoleContainer.setPrefHeight(OPENED_CONSOLE_HEIGHT);
             consoleScroll.setVmax(console.getHeight());
-            modelsContainer.setPrefHeight(canvas.getHeight() - OPENED_CONSOLE_HEIGHT + 1);
+            modelsContainer.setPrefHeight(canvas.getHeight() - CLOSED_CONSOLE_HEIGHT + 1);
 
             if (consolePane.getHeight() != console.getHeight()) {
                 consolePane.setPrefHeight(console.getHeight());
@@ -335,20 +335,44 @@ public class GuiController {
     }
 
     @FXML
+    private void onMouseToggleManipulationsClick() {
+        if (isManipulationsClosed) {
+            toggleManipulations.setText("-");
+            toggleManipulations.setPrefWidth(OPENED_MENU_WIDTH);
+            modelsManipulations.setPrefWidth(OPENED_MENU_WIDTH);
+            manipulationsScroll.setOpacity(1);
+        } else {
+            toggleManipulations.setText("+");
+            modelsManipulations.setPrefWidth(CLOSED_MENU_WIDTH);
+            manipulationsScroll.setOpacity(0);
+        }
+
+        isManipulationsClosed = !isManipulationsClosed;
+    }
+
+    @FXML
     private void onMouseToggleConsoleClick() {
         if (isConsoleClosed) {
             toggleConsoleBtn.setText("-");
-            consoleContainer.setMaxHeight(OPENED_CONSOLE_HEIGHT);
+            consoleContainer.setMaxHeight(OPENED_CONSOLE_HEIGHT - 1);
             modelsContainer.setPrefHeight(canvas.getHeight() - OPENED_CONSOLE_HEIGHT + 1);
+            modelsManipulations.setMinHeight(canvas.getHeight() - OPENED_CONSOLE_HEIGHT + 1);
             consoleScroll.setOpacity(1);
         } else {
             toggleConsoleBtn.setText("+");
             consoleContainer.setMaxHeight(CLOSED_CONSOLE_HEIGHT);
             modelsContainer.setMinHeight(canvas.getHeight() - CLOSED_CONSOLE_HEIGHT + 1);
+            modelsManipulations.setMinHeight(canvas.getHeight() - OPENED_CONSOLE_HEIGHT + 1);
             consoleScroll.setOpacity(0);
         }
 
         isConsoleClosed = !isConsoleClosed;
+    }
+
+    @FXML
+    private void onMouseTriangulateClick() {
+        // Вызов функции трингуляции (для активных моделей!)
+        System.out.println("Triangulated!");
     }
 
     @FXML
