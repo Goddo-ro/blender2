@@ -30,9 +30,9 @@ public class Triangulation {
                 assert !triangle.isEmpty() : "Empty polygon";
                 Polygon triangulatedPolygon = new Polygon();
                 ArrayList<Integer> polyVert = new ArrayList<>();
-                polyVert.add(model.vertices.indexOf(triangle.get(0))+1);
-                polyVert.add(model.vertices.indexOf(triangle.get(1))+1);
-                polyVert.add(model.vertices.indexOf(triangle.get(2))+1);
+                polyVert.add(model.vertices.indexOf(triangle.get(0)));
+                polyVert.add(model.vertices.indexOf(triangle.get(1)));
+                polyVert.add(model.vertices.indexOf(triangle.get(2)));
                 triangulatedPolygon.setVertexIndices(polyVert);
                 triangulatedPolygon.setNormalIndices(entry.getKey().getNormalIndices());
                 triangulatedPolygon.setTextureVertexIndices(entry.getKey().getTextureVertexIndices());
@@ -60,9 +60,9 @@ public class Triangulation {
                 assert !triangle.isEmpty() : "Empty polygon";
                 Polygon triangulatedPolygon = new Polygon();
                 ArrayList<Integer> polyVert = new ArrayList<>();
-                polyVert.add(model.vertices.indexOf(triangle.get(0))+1);
-                polyVert.add(model.vertices.indexOf(triangle.get(1))+1);
-                polyVert.add(model.vertices.indexOf(triangle.get(2))+1);
+                polyVert.add(model.vertices.indexOf(triangle.get(0)));
+                polyVert.add(model.vertices.indexOf(triangle.get(1)));
+                polyVert.add(model.vertices.indexOf(triangle.get(2)));
                 triangulatedPolygon.setVertexIndices(polyVert);
                 triangulatedPolygon.setNormalIndices(entry.getKey().getNormalIndices());
                 triangulatedPolygon.setTextureVertexIndices(entry.getKey().getTextureVertexIndices());

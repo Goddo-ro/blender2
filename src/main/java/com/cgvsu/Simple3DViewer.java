@@ -1,8 +1,11 @@
 package com.cgvsu;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -16,12 +19,19 @@ public class Simple3DViewer extends Application {
         AnchorPane viewport = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("fxml/gui.fxml")));
 
         Scene scene = new Scene(viewport);
+
         stage.setMinWidth(1000);
         stage.setMinHeight(300);
+
+        scene.getRoot().requestFocus();
+        stage.setMinWidth(1200);
+        stage.setMinHeight(720);
+
         viewport.prefWidthProperty().bind(scene.widthProperty());
         viewport.prefHeightProperty().bind(scene.heightProperty());
 //        stage.setFullScreen(true);
         stage.setTitle("Simple3DViewer");
+        stage.getIcons().add(new Image(getClass().getResource("images/icon.png").openStream()));
         stage.setScene(scene);
         stage.show();
     }

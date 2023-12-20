@@ -6,14 +6,19 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="anchorPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cgvsu.GuiController">
-    <MenuBar maxWidth="-Infinity" prefHeight="26.0" prefWidth="1200.0" style="-fx-background-color: #EEEEEE;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+<AnchorPane fx:id="anchorPane" onKeyPressed="#onDelKeyClick" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cgvsu.GuiController">
+    <Canvas fx:id="canvas" height="875.0" layoutY="25.0" width="1200" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />
+    <MenuBar prefHeight="25.0" prefWidth="1200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <Menu mnemonicParsing="false" text="File">
             <MenuItem mnemonicParsing="false" onAction="#onOpenModelMenuItemClick" text="Load Model">
             <accelerator>
@@ -54,19 +59,90 @@
             </MenuItem>
         </Menu>
     </MenuBar>
-    <Canvas fx:id="canvas" height="875.0" layoutY="25.0" width="1200" AnchorPane.topAnchor="25.0" />
-   <BorderPane fx:id="modelsContainer" layoutX="1000.0" prefHeight="900.0" prefWidth="200.0" style="-fx-background-color: #393E46;" AnchorPane.rightAnchor="0.0">
+   <BorderPane fx:id="modelsContainer" layoutX="1000.0" layoutY="23.0" prefHeight="529.0" prefWidth="300.0" style="-fx-background-color: #393E46;" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
       <top>
-         <Button fx:id="toggleMenu" alignment="TOP_LEFT" mnemonicParsing="false" onMouseClicked="#onMouseToggleMenuClick" prefHeight="25.0" prefWidth="254.0" style="-fx-background-color: #222831; -fx-text-fill: #EEEEEE;" text="-" BorderPane.alignment="CENTER">
+         <Button fx:id="toggleMenu" alignment="TOP_LEFT" mnemonicParsing="false" onMouseClicked="#onMouseToggleMenuClick" prefHeight="23.0" prefWidth="301.0" style="-fx-background-color: #222831; -fx-text-fill: #EEEEEE;" text="+">
             <font>
                <Font name="Monospaced Bold" size="12.0" />
             </font></Button>
       </top>
       <center>
-         <TreeView fx:id="models" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #393E46;" BorderPane.alignment="CENTER" />
+         <TreeView fx:id="models" prefHeight="760.0" prefWidth="300.0" style="-fx-background-color: #393E46;" BorderPane.alignment="TOP_RIGHT" />
       </center>
       <opaqueInsets>
          <Insets />
       </opaqueInsets>
+   </BorderPane>
+   <BorderPane fx:id="modelsManipulations" layoutY="25.0" minWidth="25.0" prefHeight="525.0" prefWidth="300.0" style="-fx-background-color: #393E46;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="25.0">
+      <top>
+         <Button fx:id="toggleManipulations" alignment="TOP_RIGHT" mnemonicParsing="false" onMouseClicked="#onMouseToggleManipulationsClick" prefHeight="23.0" prefWidth="941.0" style="-fx-background-color: #222831; -fx-text-fill: #EEEEEE;" text="+" textAlignment="RIGHT" wrapText="true">
+            <font>
+               <Font name="Monospaced Bold" size="12.0" />
+            </font>
+         </Button>
+      </top>
+      <opaqueInsets>
+         <Insets />
+      </opaqueInsets>
+      <center>
+         <ScrollPane fx:id="manipulationsScroll" fitToWidth="true" minWidth="25.0" prefHeight="525.0" prefWidth="300.0" style="-fx-background-color: #393E46;" BorderPane.alignment="TOP_CENTER">
+           <content>
+             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="505.0" prefWidth="298.0" style="-fx-background-color: #393E46;">
+                  <children>
+                     <TabPane minWidth="0.0" prefHeight="492.0" prefWidth="300.0" style="-fx-background-color: #393E46;" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                       <tabs>
+                         <Tab text="Перемещение">
+                           <content>
+                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                           </content>
+                         </Tab>
+                         <Tab text="Удаление">
+                           <content>
+                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="300.0" />
+                           </content>
+                         </Tab>
+                           <Tab text="Изменение">
+                             <content>
+                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                    <children>
+                                       <Button fx:id="triangulateBtn" mnemonicParsing="false" onMouseClicked="#onMouseTriangulateClick" prefHeight="25.0" prefWidth="300.0" text="Триангулировать" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" />
+                                    </children>
+                                 </AnchorPane>
+                             </content>
+                           </Tab>
+                       </tabs>
+                     </TabPane>
+                  </children>
+               </AnchorPane>
+           </content>
+         </ScrollPane>
+      </center>
+   </BorderPane>
+   <BorderPane fx:id="consoleContainer" layoutY="569.0" maxHeight="350.0" minHeight="20.0" prefHeight="350.0" prefWidth="1200.0" style="-fx-background-color: #393E46;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <opaqueInsets>
+         <Insets />
+      </opaqueInsets>
+      <top>
+         <Button fx:id="toggleConsoleBtn" alignment="TOP_LEFT" mnemonicParsing="false" onMouseClicked="#onMouseToggleConsoleClick" prefHeight="0.0" prefWidth="1200.0" style="-fx-background-color: #222831; -fx-text-fill: #EEEEEE;" text="+">
+            <font>
+               <Font name="Monospaced Bold" size="12.0" />
+            </font>
+         </Button>
+      </top>
+      <center>
+         <ScrollPane fx:id="consoleScroll" fitToWidth="true" minHeight="0.0" prefHeight="350.0" prefWidth="1200.0" style="-fx-background-color: #393E46;" BorderPane.alignment="CENTER">
+           <content>
+             <AnchorPane fx:id="consolePane" minHeight="0.0" minWidth="0.0" prefHeight="323.0" prefWidth="1675.0">
+                  <children>
+                     <VBox fx:id="console" prefHeight="323.0" prefWidth="1200.0" style="-fx-background-color: #393E46;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="0.0">
+                        <padding>
+                           <Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+                        </padding>
+                     </VBox>
+                  </children>
+               </AnchorPane>
+           </content>
+         </ScrollPane>
+      </center>
    </BorderPane>
 </AnchorPane>

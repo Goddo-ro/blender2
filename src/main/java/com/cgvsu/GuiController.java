@@ -1,32 +1,44 @@
 package com.cgvsu;
 
+
 import com.cgvsu.model.TriPolyModel;
+
+import com.cgvsu.log.Log;
+import com.cgvsu.log.Statuses;
+import com.cgvsu.model.Model;
+import com.cgvsu.objreader.ObjReader;
+
 import com.cgvsu.objwriter.ObjWriter;
+import com.cgvsu.render_engine.Camera;
 import com.cgvsu.render_engine.RenderEngine;
-import javafx.event.EventHandler;
-import javafx.fxml.FXML;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.TilePane;
-import javafx.stage.Stage;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import javax.vecmath.Vector3f;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.io.IOException;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
 import java.util.stream.Collectors;
 import javax.vecmath.Vector3f;
 
@@ -35,6 +47,8 @@ import com.cgvsu.objreader.ObjReader;
 import com.cgvsu.render_engine.Camera;
 import com.cgvsu.render_engine.Triangulation;
 
+
+import static com.cgvsu.utils.LogsUtils.generateLabelFromLog;
 import static com.cgvsu.utils.StringUtils.generateUniqueName;
 
 public class GuiController {
@@ -52,21 +66,54 @@ public class GuiController {
     private BorderPane modelsContainer;
 
     @FXML
+    private BorderPane modelsManipulations;
+
+    @FXML
+    private BorderPane consoleContainer;
+
+    @FXML
+    private ScrollPane consoleScroll;
+
+    @FXML ScrollPane manipulationsScroll;
+
+    @FXML
     private Button toggleMenu;
 
     @FXML
+    private Button toggleConsoleBtn;
+
+    @FXML
+    private Button toggleManipulations;
+
+    @FXML
+    private Button triangulateBtn;
+
+    @FXML
     private TreeView<String> models;
+
+    @FXML
+    private AnchorPane consolePane;
+
+    @FXML
+    private VBox console;
 
     private Model mesh = null;
 
     private final List<Model> modelsList = new ArrayList<>();
 
     private boolean isMenuClosed = false;
+    private boolean isConsoleClosed = false;
+    private boolean isManipulationsClosed = false;
 
     private MultipleSelectionModel<TreeItem<String>> selectionModel;
 
-    private final int OPENED_MENU_WIDTH = 300;
+    private final List<Log> logs = new ArrayList<>();
+
+    private final int OPENED_MENU_WIDTH = 350;
     private final int CLOSED_MENU_WIDTH = 20;
+
+    private final int OPENED_CONSOLE_HEIGHT = 350;
+    private final int CLOSED_CONSOLE_HEIGHT = 20;
 
     private Camera camera = new Camera(
             new Vector3f(0, 0, 100),
@@ -166,8 +213,9 @@ public class GuiController {
             try {
                 ObjWriter.write(model, selectedFile.getAbsolutePath());
                 System.out.println(selectedFile.getAbsolutePath());
-                // todo: обработка ошибок
-            } catch (IOException e) {
+                logs.add(new Log("Модель " + model.getName() + " успешно сохранена", Statuses.MESSAGE));
+            } catch (Exception exception) {
+                logs.add(new Log(exception.getMessage(), Statuses.ERROR));
             }
         }
     }
@@ -185,6 +233,17 @@ public class GuiController {
         return false;
     }
 
+    private void removeActiveModels() {
+        for (int i = 0; i < modelsList.size(); i++) {
+            if (isModelActive(modelsList.get(i))) {
+                modelsList.remove(i);
+                i--;
+            }
+        }
+
+        updateModels();
+    }
+
     private void initializeModels() {
         TreeItem<String> rootTreeNode = new TreeItem<>("Objects");
         TreeItem<String> modelsNode = new TreeItem<>("Models");
@@ -195,6 +254,15 @@ public class GuiController {
         selectionModel.setSelectionMode(SelectionMode.MULTIPLE);
     }
 
+    private void updateLogs() {
+        console.getChildren().clear();
+        for (Log log : logs) {
+            Label label = generateLabelFromLog(log);
+            console.getChildren().add(label);
+        }
+        // TODO: Scroll console to bottom
+    }
+
     @FXML
     private void initialize() {
         anchorPane.prefWidthProperty().addListener((ov, oldValue, newValue) -> canvas.setWidth(newValue.doubleValue()));
@@ -203,10 +271,9 @@ public class GuiController {
         timeline = new Timeline();
         timeline.setCycleCount(Animation.INDEFINITE);
 
-        modelsContainer.setLayoutX(canvas.getWidth() - modelsContainer.getWidth());
-        modelsContainer.setPrefWidth(OPENED_MENU_WIDTH);
-
-        toggleMenu.setPrefWidth(OPENED_MENU_WIDTH);
+        onMouseToggleConsoleClick();
+        onMouseToggleMenuClick();
+        onMouseToggleManipulationsClick();
 
         initializeModels();
 
@@ -216,6 +283,19 @@ public class GuiController {
 
             canvas.getGraphicsContext2D().clearRect(0, 0, width, height);
             camera.setAspectRatio((float) (width / height));
+
+            toggleConsoleBtn.setPrefWidth(width);
+            consoleScroll.setVmax(console.getHeight());
+            modelsContainer.setPrefHeight(canvas.getHeight() - CLOSED_CONSOLE_HEIGHT + 1);
+
+            if (consolePane.getHeight() != console.getHeight()) {
+                consolePane.setPrefHeight(console.getHeight());
+            }
+
+
+            if (logs.size() != console.getChildren().size()) {
+                updateLogs();
+            }
 
             for (Model model : modelsList) {
                 RenderEngine.render(canvas.getGraphicsContext2D(), camera, model, (int) width, (int) height, isModelActive(model));
@@ -245,9 +325,9 @@ public class GuiController {
             mesh.setName(generateUniqueName(file.getName(), getModelsName()));
             modelsList.add(mesh);
             updateModels();
-            // todo: обработка ошибок
-        } catch (IOException exception) {
-
+            logs.add(new Log("Модель " + mesh.getName() + " успешно загружена", Statuses.MESSAGE));
+        } catch (Exception exception) {
+            logs.add(new Log(exception.getMessage(), Statuses.ERROR));
         }
     }
 
@@ -265,6 +345,54 @@ public class GuiController {
         }
 
         isMenuClosed = !isMenuClosed;
+    }
+
+    @FXML
+    private void onMouseToggleManipulationsClick() {
+        if (isManipulationsClosed) {
+            toggleManipulations.setText("-");
+            toggleManipulations.setPrefWidth(OPENED_MENU_WIDTH);
+            modelsManipulations.setPrefWidth(OPENED_MENU_WIDTH);
+            manipulationsScroll.setOpacity(1);
+        } else {
+            toggleManipulations.setText("+");
+            modelsManipulations.setPrefWidth(CLOSED_MENU_WIDTH);
+            manipulationsScroll.setOpacity(0);
+        }
+
+        isManipulationsClosed = !isManipulationsClosed;
+    }
+
+    @FXML
+    private void onMouseToggleConsoleClick() {
+        if (isConsoleClosed) {
+            toggleConsoleBtn.setText("-");
+            consoleContainer.setMaxHeight(OPENED_CONSOLE_HEIGHT - 1);
+            modelsContainer.setPrefHeight(canvas.getHeight() - OPENED_CONSOLE_HEIGHT + 1);
+            modelsManipulations.setMinHeight(canvas.getHeight() - OPENED_CONSOLE_HEIGHT + 1);
+            consoleScroll.setOpacity(1);
+        } else {
+            toggleConsoleBtn.setText("+");
+            consoleContainer.setMaxHeight(CLOSED_CONSOLE_HEIGHT);
+            modelsContainer.setMinHeight(canvas.getHeight() - CLOSED_CONSOLE_HEIGHT + 1);
+            modelsManipulations.setMinHeight(canvas.getHeight() - OPENED_CONSOLE_HEIGHT + 1);
+            consoleScroll.setOpacity(0);
+        }
+
+        isConsoleClosed = !isConsoleClosed;
+    }
+
+    @FXML
+    private void onMouseTriangulateClick() {
+        // Вызов функции трингуляции (для активных моделей!)
+        System.out.println("Triangulated!");
+    }
+
+    @FXML
+    private void onDelKeyClick(KeyEvent key) {
+        if (key.getCode() == KeyCode.DELETE) {
+            removeActiveModels();
+        }
     }
 
     @FXML
