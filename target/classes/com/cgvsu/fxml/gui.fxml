@@ -9,12 +9,14 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
 <AnchorPane fx:id="anchorPane" onKeyPressed="#onDelKeyClick" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cgvsu.GuiController">
     <Canvas fx:id="canvas" height="875.0" layoutY="25.0" width="1200" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />
@@ -89,7 +91,7 @@
            <content>
              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="505.0" prefWidth="298.0" style="-fx-background-color: #393E46;">
                   <children>
-                     <TabPane minWidth="0.0" prefHeight="492.0" prefWidth="300.0" style="-fx-background-color: #393E46;" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <TabPane minWidth="0.0" prefHeight="851.0" prefWidth="298.0" style="-fx-background-color: #393E46;" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="-1900.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                        <tabs>
                          <Tab text="Перемещение">
                            <content>
@@ -98,14 +100,19 @@
                          </Tab>
                          <Tab text="Удаление">
                            <content>
-                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="300.0" />
+                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="300.0">
+                                    <children>
+                                       <TextField fx:id="indicesText" layoutX="14.0" layoutY="39.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" />
+                                       <Text layoutX="14.0" layoutY="14.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-fill: #ffffff;" text="Введите индексы через пробел:" wrappingWidth="268.13671875" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0" />
+                                       <Button fx:id="deleteVerticesBtn" layoutX="14.0" layoutY="77.0" mnemonicParsing="false" onMouseClicked="#onMouseDelVerticesClick" prefHeight="25.0" prefWidth="269.0" text="Удалить вершины" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" />
+                                    </children></AnchorPane>
                            </content>
                          </Tab>
                            <Tab text="Изменение">
                              <content>
                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                     <children>
-                                       <Button fx:id="triangulateBtn" mnemonicParsing="false" onMouseClicked="#onMouseTriangulateClick" prefHeight="25.0" prefWidth="300.0" text="Триангулировать" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" />
+                                       <Button fx:id="triangulateBtn" mnemonicParsing="false" onMouseClicked="#onMouseTriangulateClick" prefHeight="25.0" prefWidth="300.0" text="Триангулировать" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0" />
                                     </children>
                                  </AnchorPane>
                              </content>
@@ -130,11 +137,11 @@
          </Button>
       </top>
       <center>
-         <ScrollPane fx:id="consoleScroll" fitToWidth="true" minHeight="0.0" prefHeight="350.0" prefWidth="1200.0" style="-fx-background-color: #393E46;" BorderPane.alignment="CENTER">
+         <ScrollPane fx:id="consoleScroll" fitToWidth="true" minHeight="0.0" prefHeight="363.0" prefWidth="1200.0" style="-fx-background-color: #393E46;" BorderPane.alignment="BOTTOM_CENTER">
            <content>
-             <AnchorPane fx:id="consolePane" minHeight="0.0" minWidth="0.0" prefHeight="323.0" prefWidth="1675.0">
+             <AnchorPane fx:id="consolePane" minHeight="325.0" minWidth="0.0" prefHeight="0.0" prefWidth="1675.0">
                   <children>
-                     <VBox fx:id="console" prefHeight="323.0" prefWidth="1200.0" style="-fx-background-color: #393E46;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="0.0">
+                     <VBox fx:id="console" prefHeight="0.0" prefWidth="1200.0" style="-fx-background-color: #393E46;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="always">
                         <padding>
                            <Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
                         </padding>

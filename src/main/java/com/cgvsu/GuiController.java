@@ -35,20 +35,11 @@ import javax.vecmath.Vector3f;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
-import java.util.stream.Collectors;
-import javax.vecmath.Vector3f;
-
-import com.cgvsu.model.Model;
-import com.cgvsu.objreader.ObjReader;
-import com.cgvsu.render_engine.Camera;
-import com.cgvsu.render_engine.Triangulation;
-
-
+import static com.cgvsu.utils.ListUtils.stringToNumberList;
 import static com.cgvsu.utils.LogsUtils.generateLabelFromLog;
+import static com.cgvsu.utils.ModelUtils.deleteVertexes;
 import static com.cgvsu.utils.StringUtils.generateUniqueName;
 
 public class GuiController {
@@ -87,6 +78,12 @@ public class GuiController {
 
     @FXML
     private Button triangulateBtn;
+
+    @FXML
+    private Button deleteVerticesBtn;
+
+    @FXML
+    private TextField indicesText;
 
     @FXML
     private TreeView<String> models;
@@ -212,12 +209,20 @@ public class GuiController {
         if (selectedFile != null) {
             try {
                 ObjWriter.write(model, selectedFile.getAbsolutePath());
-                System.out.println(selectedFile.getAbsolutePath());
-                logs.add(new Log("Модель " + model.getName() + " успешно сохранена", Statuses.MESSAGE));
+                addLog("Model " + model.getName() + " was successfully saved", Statuses.MESSAGE);
             } catch (Exception exception) {
-                logs.add(new Log(exception.getMessage(), Statuses.ERROR));
+                addLog(exception.getMessage(), Statuses.ERROR);
             }
         }
+    }
+
+    private void removeModel(Model model) {
+        modelsList.remove(model);
+    }
+
+    public void addLog(String body, Statuses status) {
+        logs.add(0, new Log(body, status));
+        updateLogs();
     }
 
     public List<TreeItem<String>> getSelectedModels() {
@@ -260,7 +265,11 @@ public class GuiController {
             Label label = generateLabelFromLog(log);
             console.getChildren().add(label);
         }
-        // TODO: Scroll console to bottom
+
+        console.setMinHeight(console.getChildren().size() * 30 - 12);
+        consolePane.setPrefHeight(console.getChildren().size() * 30 - 12);
+        consoleScroll.setVmax(console.getChildren().size() * 30 - 12);
+        consoleScroll.setVvalue(console.getChildren().size() * 30 - 12);
     }
 
     @FXML
@@ -312,7 +321,7 @@ public class GuiController {
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Model (*.obj)", "*.obj"));
         fileChooser.setTitle("Load Model");
 
-        File file = fileChooser.showOpenDialog((Stage) canvas.getScene().getWindow());
+        File file = fileChooser.showOpenDialog(canvas.getScene().getWindow());
         if (file == null) {
             return;
         }
@@ -325,9 +334,9 @@ public class GuiController {
             mesh.setName(generateUniqueName(file.getName(), getModelsName()));
             modelsList.add(mesh);
             updateModels();
-            logs.add(new Log("Модель " + mesh.getName() + " успешно загружена", Statuses.MESSAGE));
+            addLog("Model " + mesh.getName() + " was successfully loaded", Statuses.MESSAGE);
         } catch (Exception exception) {
-            logs.add(new Log(exception.getMessage(), Statuses.ERROR));
+            addLog(exception.getMessage(), Statuses.ERROR);
         }
     }
 
@@ -387,6 +396,37 @@ public class GuiController {
         // Вызов функции трингуляции (для активных моделей!)
         System.out.println("Triangulated!");
     }
+
+    @FXML
+    private void onMouseDelVerticesClick() {
+        // TODO: not change vertices if some of them are greater than max index
+        try {
+            List<TreeItem<String>> selectedModels = getSelectedModels();
+            if (selectedModels.size() == 0) {
+                addLog("Indices haven't been deleted as there is no selected models", Statuses.WARNING);
+                return;
+            }
+
+            Model model = getModelByName(selectedModels.get(0).getValue());
+            List<String> elements = new ArrayList<>(Arrays.asList(indicesText.getText().split(" ")));
+            List<Integer> indices = stringToNumberList(elements);
+            assert model != null;
+
+            deleteVertexes(model, indices);
+
+            addLog("Indices successfully deleted", Statuses.MESSAGE);
+
+            if (model.polygons.size() == 0) {
+                removeModel(model);
+                addLog("Model was removed as it hadn't any polygons", Statuses.WARNING);
+            }
+
+            updateModels();
+        } catch (Exception exception) {
+            addLog(exception.getMessage(), Statuses.ERROR);
+        }
+    }
+
 
     @FXML
     private void onDelKeyClick(KeyEvent key) {
