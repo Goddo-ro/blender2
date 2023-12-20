@@ -31,10 +31,7 @@ import javax.vecmath.Vector3f;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static com.cgvsu.utils.ListUtils.stringToNumberList;
 import static com.cgvsu.utils.LogsUtils.generateLabelFromLog;
@@ -208,8 +205,7 @@ public class GuiController {
         if (selectedFile != null) {
             try {
                 ObjWriter.write(model, selectedFile.getAbsolutePath());
-                System.out.println(selectedFile.getAbsolutePath());
-                addLog("Модель " + model.getName() + " успешно сохранена", Statuses.MESSAGE);
+                addLog("Model " + model.getName() + " was successfully loaded", Statuses.MESSAGE);
             } catch (Exception exception) {
                 addLog(exception.getMessage(), Statuses.ERROR);
             }
@@ -221,7 +217,7 @@ public class GuiController {
     }
 
     public void addLog(String body, Statuses status) {
-        logs.add(new Log(body, status));
+        logs.add(0, new Log(body, status));
         updateLogs();
     }
 
@@ -265,7 +261,11 @@ public class GuiController {
             Label label = generateLabelFromLog(log);
             console.getChildren().add(label);
         }
-        // TODO: Scroll console to bottom
+
+        console.setMinHeight(console.getChildren().size() * 30 - 12);
+        consolePane.setPrefHeight(console.getChildren().size() * 30 - 12);
+        consoleScroll.setVmax(console.getChildren().size() * 30 - 12);
+        consoleScroll.setVvalue(console.getChildren().size() * 30 - 12);
     }
 
     @FXML
@@ -290,7 +290,6 @@ public class GuiController {
             camera.setAspectRatio((float) (width / height));
 
             toggleConsoleBtn.setPrefWidth(width);
-            consoleScroll.setVmax(console.getHeight());
             modelsContainer.setPrefHeight(canvas.getHeight() - CLOSED_CONSOLE_HEIGHT + 1);
 
             if (consolePane.getHeight() != console.getHeight()) {
@@ -317,7 +316,7 @@ public class GuiController {
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Model (*.obj)", "*.obj"));
         fileChooser.setTitle("Load Model");
 
-        File file = fileChooser.showOpenDialog((Stage) canvas.getScene().getWindow());
+        File file = fileChooser.showOpenDialog(canvas.getScene().getWindow());
         if (file == null) {
             return;
         }
@@ -395,6 +394,7 @@ public class GuiController {
 
     @FXML
     private void onMouseDelVerticesClick() {
+        // TODO: not change vertices if some of them are greater than max index
         try {
             List<TreeItem<String>> selectedModels = getSelectedModels();
             if (selectedModels.size() == 0) {

@@ -139,9 +139,9 @@
       <center>
          <ScrollPane fx:id="consoleScroll" fitToWidth="true" minHeight="0.0" prefHeight="363.0" prefWidth="1200.0" style="-fx-background-color: #393E46;" BorderPane.alignment="BOTTOM_CENTER">
            <content>
-             <AnchorPane fx:id="consolePane" minHeight="0.0" minWidth="0.0" prefHeight="323.0" prefWidth="1675.0">
+             <AnchorPane fx:id="consolePane" minHeight="325.0" minWidth="0.0" prefHeight="0.0" prefWidth="1675.0">
                   <children>
-                     <VBox fx:id="console" prefHeight="325.0" prefWidth="1200.0" style="-fx-background-color: #393E46;" AnchorPane.bottomAnchor="-2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="0.0">
+                     <VBox fx:id="console" prefHeight="0.0" prefWidth="1200.0" style="-fx-background-color: #393E46;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="always">
                         <padding>
                            <Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
                         </padding>
