@@ -37,6 +37,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
+import static com.cgvsu.render_engine.Triangulation.triangulateModel;
 import static com.cgvsu.utils.ListUtils.stringToNumberList;
 import static com.cgvsu.utils.LogsUtils.generateLabelFromLog;
 import static com.cgvsu.utils.ModelUtils.deleteVertexes;
@@ -393,8 +394,23 @@ public class GuiController {
 
     @FXML
     private void onMouseTriangulateClick() {
-        // Вызов функции трингуляции (для активных моделей!)
-        System.out.println("Triangulated!");
+        // TODO: create a function that gives an active model;
+        try {
+            List<TreeItem<String>> selectedModels = getSelectedModels();
+            if (selectedModels.size() == 0) {
+                addLog("Indices haven't been deleted as there is no selected models", Statuses.WARNING);
+                return;
+            }
+
+            Model model = getModelByName(selectedModels.get(0).getValue());
+            assert model != null;
+
+            triangulateModel(model);
+
+            addLog("Model " + model.getName() + " was successfully triangulated", Statuses.MESSAGE);
+        } catch (Exception exception) {
+            addLog(exception.getMessage(), Statuses.ERROR);
+        }
     }
 
     @FXML
