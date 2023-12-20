@@ -41,4 +41,12 @@ public class Polygon {
     public ArrayList<Integer> getNormalIndices() {
         return normalIndices;
     }
+
+    public void offset(int index) {
+        for (int i = 0; i < vertexIndices.size(); i++) {
+            if (vertexIndices.get(i) > index) {
+                vertexIndices.set(i, vertexIndices.get(i) - 1);
+            }
+        }
+    }
 }
