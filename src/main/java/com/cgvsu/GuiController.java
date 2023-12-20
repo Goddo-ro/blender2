@@ -205,7 +205,7 @@ public class GuiController {
         if (selectedFile != null) {
             try {
                 ObjWriter.write(model, selectedFile.getAbsolutePath());
-                addLog("Model " + model.getName() + " was successfully loaded", Statuses.MESSAGE);
+                addLog("Model " + model.getName() + " was successfully saved", Statuses.MESSAGE);
             } catch (Exception exception) {
                 addLog(exception.getMessage(), Statuses.ERROR);
             }
@@ -329,7 +329,7 @@ public class GuiController {
             mesh.setName(generateUniqueName(file.getName(), getModelsName()));
             modelsList.add(mesh);
             updateModels();
-            addLog("Модель " + mesh.getName() + " успешно загружена", Statuses.MESSAGE);
+            addLog("Model " + mesh.getName() + " was successfully loaded", Statuses.MESSAGE);
         } catch (Exception exception) {
             addLog(exception.getMessage(), Statuses.ERROR);
         }
