@@ -32,10 +32,13 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import static com.cgvsu.utils.ListUtils.stringToNumberList;
 import static com.cgvsu.utils.LogsUtils.generateLabelFromLog;
+import static com.cgvsu.utils.ModelUtils.deleteVertexes;
 import static com.cgvsu.utils.StringUtils.generateUniqueName;
 
 public class GuiController {
@@ -74,6 +77,12 @@ public class GuiController {
 
     @FXML
     private Button triangulateBtn;
+
+    @FXML
+    private Button deleteVerticesBtn;
+
+    @FXML
+    private TextField indicesText;
 
     @FXML
     private TreeView<String> models;
@@ -200,11 +209,20 @@ public class GuiController {
             try {
                 ObjWriter.write(model, selectedFile.getAbsolutePath());
                 System.out.println(selectedFile.getAbsolutePath());
-                logs.add(new Log("Модель " + model.getName() + " успешно сохранена", Statuses.MESSAGE));
+                addLog("Модель " + model.getName() + " успешно сохранена", Statuses.MESSAGE);
             } catch (Exception exception) {
-                logs.add(new Log(exception.getMessage(), Statuses.ERROR));
+                addLog(exception.getMessage(), Statuses.ERROR);
             }
         }
+    }
+
+    private void removeModel(Model model) {
+        modelsList.remove(model);
+    }
+
+    public void addLog(String body, Statuses status) {
+        logs.add(new Log(body, status));
+        updateLogs();
     }
 
     public List<TreeItem<String>> getSelectedModels() {
@@ -312,9 +330,9 @@ public class GuiController {
             mesh.setName(generateUniqueName(file.getName(), getModelsName()));
             modelsList.add(mesh);
             updateModels();
-            logs.add(new Log("Модель " + mesh.getName() + " успешно загружена", Statuses.MESSAGE));
+            addLog("Модель " + mesh.getName() + " успешно загружена", Statuses.MESSAGE);
         } catch (Exception exception) {
-            logs.add(new Log(exception.getMessage(), Statuses.ERROR));
+            addLog(exception.getMessage(), Statuses.ERROR);
         }
     }
 
@@ -374,6 +392,36 @@ public class GuiController {
         // Вызов функции трингуляции (для активных моделей!)
         System.out.println("Triangulated!");
     }
+
+    @FXML
+    private void onMouseDelVerticesClick() {
+        try {
+            List<TreeItem<String>> selectedModels = getSelectedModels();
+            if (selectedModels.size() == 0) {
+                addLog("Indices haven't been deleted as there is no selected models", Statuses.WARNING);
+                return;
+            }
+
+            Model model = getModelByName(selectedModels.get(0).getValue());
+            List<String> elements = new ArrayList<>(Arrays.asList(indicesText.getText().split(" ")));
+            List<Integer> indices = stringToNumberList(elements);
+            assert model != null;
+
+            deleteVertexes(model, indices);
+
+            addLog("Indices successfully deleted", Statuses.MESSAGE);
+
+            if (model.polygons.size() == 0) {
+                removeModel(model);
+                addLog("Model was removed as it hadn't any polygons", Statuses.WARNING);
+            }
+
+            updateModels();
+        } catch (Exception exception) {
+            addLog(exception.getMessage(), Statuses.ERROR);
+        }
+    }
+
 
     @FXML
     private void onDelKeyClick(KeyEvent key) {
