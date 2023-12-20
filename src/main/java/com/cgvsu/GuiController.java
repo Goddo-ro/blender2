@@ -1,5 +1,6 @@
 package com.cgvsu;
 
+import com.cgvsu.model.TriPolyModel;
 import com.cgvsu.objwriter.ObjWriter;
 import com.cgvsu.render_engine.RenderEngine;
 import javafx.event.EventHandler;
@@ -32,6 +33,7 @@ import javax.vecmath.Vector3f;
 import com.cgvsu.model.Model;
 import com.cgvsu.objreader.ObjReader;
 import com.cgvsu.render_engine.Camera;
+import com.cgvsu.render_engine.Triangulation;
 
 import static com.cgvsu.utils.StringUtils.generateUniqueName;
 
