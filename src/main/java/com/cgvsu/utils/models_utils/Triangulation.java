@@ -1,4 +1,4 @@
-package com.cgvsu.render_engine;
+package com.cgvsu.utils.models_utils;
 
 import com.cgvsu.model.Model;
 import com.cgvsu.model.Polygon;

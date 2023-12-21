@@ -3,6 +3,7 @@ import com.cgvsu.model.Model;
 
 import com.cgvsu.model.Polygon;
 import com.cgvsu.math.Vector3f;
+import com.cgvsu.utils.NormalUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

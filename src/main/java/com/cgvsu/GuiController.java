@@ -34,7 +34,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
-import static com.cgvsu.render_engine.Triangulation.triangulateModel;
+import static com.cgvsu.utils.models_utils.Triangulation.triangulateModel;
 import static com.cgvsu.utils.ListUtils.stringToNumberList;
 import static com.cgvsu.utils.LogsUtils.generateLabelFromLog;
 import static com.cgvsu.utils.models_utils.PolygonRemover.removePolygons;

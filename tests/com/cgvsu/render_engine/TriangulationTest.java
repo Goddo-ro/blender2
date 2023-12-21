@@ -5,6 +5,7 @@ import com.cgvsu.model.TriPolyModel;
 import com.cgvsu.model.Polygon;
 import com.cgvsu.math.Vector2f;
 import com.cgvsu.math.Vector3f;
+import com.cgvsu.utils.models_utils.Triangulation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.cgvsu.render_engine;
+package com.cgvsu.utils;
 
 import com.cgvsu.math.Vector3f;
 import com.cgvsu.math.VectorOperations;
