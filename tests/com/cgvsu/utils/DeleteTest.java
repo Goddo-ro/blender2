@@ -3,18 +3,14 @@ package com.cgvsu.utils;
 import com.cgvsu.math.Vector3f;
 import com.cgvsu.model.Model;
 import com.cgvsu.model.Polygon;
-import com.cgvsu.objreader.ObjReader;
-import com.cgvsu.objwriter.ObjWriter;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.cgvsu.utils.ModelUtils.deleteVertexes;
+import static com.cgvsu.utils.models_utils.VerticesRemover.deleteVertexes;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DeleteTest {
