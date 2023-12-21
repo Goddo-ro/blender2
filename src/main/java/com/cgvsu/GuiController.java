@@ -398,7 +398,7 @@ public class GuiController {
         try {
             List<TreeItem<String>> selectedModels = getSelectedModels();
             if (selectedModels.size() == 0) {
-                addLog("Indices haven't been deleted as there is no selected models", Statuses.WARNING);
+                addLog("Indices haven't been triangulated as there is no selected models", Statuses.WARNING);
                 return;
             }
 
