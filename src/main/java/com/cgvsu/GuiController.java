@@ -1,8 +1,6 @@
 package com.cgvsu;
 
 
-import com.cgvsu.model.TriPolyModel;
-
 import com.cgvsu.log.Log;
 import com.cgvsu.log.Statuses;
 import com.cgvsu.model.Model;
@@ -28,7 +26,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import javax.vecmath.Vector3f;
@@ -40,7 +37,8 @@ import java.util.*;
 import static com.cgvsu.render_engine.Triangulation.triangulateModel;
 import static com.cgvsu.utils.ListUtils.stringToNumberList;
 import static com.cgvsu.utils.LogsUtils.generateLabelFromLog;
-import static com.cgvsu.utils.ModelUtils.deleteVertexes;
+import static com.cgvsu.utils.models_utils.PolygonRemover.removePolygons;
+import static com.cgvsu.utils.models_utils.VerticesRemover.deleteVertexes;
 import static com.cgvsu.utils.StringUtils.generateUniqueName;
 
 public class GuiController {
@@ -273,6 +271,11 @@ public class GuiController {
         consoleScroll.setVvalue(console.getChildren().size() * 30 - 12);
     }
 
+    private List<Integer> getIndicesFromRemoveInput() {
+        List<String> elements = new ArrayList<>(Arrays.asList(indicesText.getText().split(" ")));
+        return stringToNumberList(elements);
+    }
+
     @FXML
     private void initialize() {
         anchorPane.prefWidthProperty().addListener((ov, oldValue, newValue) -> canvas.setWidth(newValue.doubleValue()));
@@ -398,7 +401,7 @@ public class GuiController {
         try {
             List<TreeItem<String>> selectedModels = getSelectedModels();
             if (selectedModels.size() == 0) {
-                addLog("Indices haven't been triangulated as there is no selected models", Statuses.WARNING);
+                addLog("Model hasn't been triangulated as there is no selected models", Statuses.WARNING);
                 return;
             }
 
@@ -419,18 +422,18 @@ public class GuiController {
         try {
             List<TreeItem<String>> selectedModels = getSelectedModels();
             if (selectedModels.size() == 0) {
-                addLog("Indices haven't been deleted as there is no selected models", Statuses.WARNING);
+                addLog("Polygons haven't been deleted as there is no selected models", Statuses.WARNING);
                 return;
             }
 
             Model model = getModelByName(selectedModels.get(0).getValue());
-            List<String> elements = new ArrayList<>(Arrays.asList(indicesText.getText().split(" ")));
-            List<Integer> indices = stringToNumberList(elements);
             assert model != null;
+
+            List<Integer> indices = getIndicesFromRemoveInput();
 
             deleteVertexes(model, indices);
 
-            addLog("Indices successfully deleted", Statuses.MESSAGE);
+            addLog("Vertices successfully deleted", Statuses.MESSAGE);
 
             if (model.polygons.size() == 0) {
                 removeModel(model);
@@ -443,6 +446,34 @@ public class GuiController {
         }
     }
 
+    @FXML
+    private void onMouseDelPolygonsClick() {
+        try {
+            List<TreeItem<String>> selectedModels = getSelectedModels();
+            if (selectedModels.size() == 0) {
+                addLog("Indices haven't been deleted as there is no selected models", Statuses.WARNING);
+                return;
+            }
+
+            Model model = getModelByName(selectedModels.get(0).getValue());
+            assert model != null;
+
+            List<Integer> indices = getIndicesFromRemoveInput();
+
+            removePolygons(model, (ArrayList<Integer>) indices, true);
+
+            addLog("Polygons successfully deleted", Statuses.MESSAGE);
+
+            if (model.polygons.size() == 0) {
+                removeModel(model);
+                addLog("Model was removed as it hadn't any polygons", Statuses.WARNING);
+            }
+
+            updateModels();
+        } catch (Exception exception) {
+            addLog(exception.getMessage(), Statuses.ERROR);
+        }
+    }
 
     @FXML
     private void onDelKeyClick(KeyEvent key) {

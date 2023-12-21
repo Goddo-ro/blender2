@@ -1,4 +1,4 @@
-package com.cgvsu.utils;
+package com.cgvsu.utils.models_utils;
 
 import com.cgvsu.model.Model;
 import com.cgvsu.model.Polygon;
@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class ModelUtils {
+public class VerticesRemover {
     public static void deleteVertexes(Model model, Integer[] vertices) throws IndexOutOfBoundsException {
         deleteVertexes(model, Arrays.asList(vertices));
     }
