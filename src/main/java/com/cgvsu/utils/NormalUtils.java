@@ -1,7 +1,7 @@
 package com.cgvsu.utils;
 
 import com.cgvsu.math.Vector3f;
-import com.cgvsu.math.VectorOperations;
+//import com.cgvsu.math.VectorOperations;
 import com.cgvsu.model.Polygon;
 
 import java.util.ArrayList;
@@ -11,12 +11,12 @@ public class NormalUtils {
     private static Vector3f normalPolygon(Polygon polygon, ArrayList<Vector3f> vertices) {
         ArrayList<Integer> vertexIndices = polygon.getVertexIndices();
         try {
-            return VectorOperations.vectorProduct(VectorOperations.vector(vertices.get(vertexIndices.get(0)), vertices.get(vertexIndices.get(1))),
-                    VectorOperations.vector(vertices.get(vertexIndices.get(0)), vertices.get(vertexIndices.get(2))));
+            return Vector3f.crossProduct(
+                    Vector3f.deduct(vertices.get(vertexIndices.get(0)), vertices.get(vertexIndices.get(1))),
+                    Vector3f.deduct(vertices.get(vertexIndices.get(0)), vertices.get(vertexIndices.get(2))));
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("известно менее 3 вершин (у полигона)");
+            throw new ArrayIndexOutOfBoundsException("Polygon vertices amount < 3");
         }
-        return null;
     }
 
     public static ArrayList<Vector3f> normalsVertex(ArrayList<Vector3f> vertices, ArrayList<Polygon> polygons) {
@@ -37,14 +37,14 @@ public class NormalUtils {
                     normalSummaVertex[vertexIndex] = normalsPolygon.get(indexPoligon);
                     count[vertexIndex] = 1;
                 } else {
-                    normalSummaVertex[vertexIndex] = VectorOperations.summaVector(normalSummaVertex[vertexIndex], normalsPolygon.get(indexPoligon));
+                    normalSummaVertex[vertexIndex] = Vector3f.add(normalSummaVertex[vertexIndex], normalsPolygon.get(indexPoligon));
                     count[vertexIndex]++;
                 }
             }
         }
         for (int i = 0; i < count.length; i++) {
             // по сути нахождение среднего арифметического в данном случае не особо нужно, так как это просто сокращает длинну вектора суммы, что так же осуществляется с помощью нормализации
-            normalsVertex.add(i, VectorOperations.normalize(VectorOperations.quotient(normalSummaVertex[i], count[i])));
+            normalsVertex.add(i, normalSummaVertex[i].normalize());
         }
         return normalsVertex;
     }

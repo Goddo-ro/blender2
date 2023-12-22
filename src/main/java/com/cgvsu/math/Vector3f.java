@@ -1,20 +1,21 @@
 package com.cgvsu.math;
 
-// Это заготовка для собственной библиотеки для работы с линейной алгеброй
-public class Vector3f {
-    public Vector3f(float x, float y, float z) {
+public class Vector3f{
+    private float x;
+    private float y;
+    private float z;
+
+    public Vector3f (float x, float y, float z){
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
-    public boolean equals(Vector3f other) {
-        // todo: желательно, чтобы это была глобальная константа
-        final float eps = 1e-7f;
-        return Math.abs(x - other.x) < eps && Math.abs(y - other.y) < eps && Math.abs(z - other.z) < eps;
+    public Vector3f() {
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
     }
-
-    public float x, y, z;
 
     public float getX() {
         return x;
@@ -26,5 +27,98 @@ public class Vector3f {
 
     public float getZ() {
         return z;
+    }
+    public double get(int index) {
+        switch (index){
+            case 0: return x;
+            case 1: return y;
+            case 2: return z;
+        }
+        throw new IllegalArgumentException("Index out of bounds");
+    }
+
+    public Vector3f add(Vector3f other){
+        return new Vector3f(
+                this.x + other.x,
+                this.y + other.y,
+                this.z + other.z
+        );
+    }
+    public static Vector3f add(Vector3f first, Vector3f second) {
+        return new Vector3f(
+                first.x + second.x,
+                first.y + second.x,
+                first.z + second.z
+        );
+    }
+
+    //Вычитание векторов
+    public Vector3f deduct(Vector3f other){
+        return new Vector3f(
+                this.x - other.x,
+                this.y - other.y,
+                this.z - other.z
+        );
+    }
+
+    public static Vector3f deduct(Vector3f first, Vector3f second) {
+        return new Vector3f(
+                first.x - second.x,
+                first.y - second.y,
+                first.z - second.z
+        );
+    }
+
+    //Умножение на скаляр
+    public Vector3f multiply(float scalar){
+        return new Vector3f(
+                this.x * scalar,
+                this.y * scalar,
+                this.z * scalar
+        );
+    }
+    //Деление на скаляр
+    public Vector3f divide(float scalar){
+        if (scalar == 0){
+            throw new ArithmeticException("Dividing by zero is undefined and not allowed");
+        }
+        return new Vector3f(
+                this.x/scalar,
+                this.y/scalar,
+                this.z/scalar
+        );
+    }
+    //Вычисление длины вектора
+    public float length(){
+        return (float) Math.sqrt(x*x + y*y + z*z);
+    }
+    //Нормализация вектора
+    public Vector3f normalize() {
+        float normalization = length() != 0 ? 1 / length() : 0;
+        return new Vector3f(
+                this.x * normalization,
+                this.y * normalization,
+                this.z * normalization
+        );
+    }
+    //Скалярное произведение векторов
+    public float dot(Vector3f other){
+        return this.x * other.x + this.y * other.y + this.z * other.z;
+    }
+    // Векторное произведение векторов
+    public Vector3f crossProduct(Vector3f other) {
+        return new Vector3f(
+                this.y * other.z - this.z * other.y,
+                this.z * other.x - this.x * other.z,
+                this.x * other.y - this.y * other.x
+        );
+    }
+
+    public static Vector3f crossProduct(Vector3f first, Vector3f second) {
+        return new Vector3f(
+                first.x * second.z - first.z * second.y,
+                first.z * second.x - first.x * second.z,
+                first.x * second.y - first.y * second.x
+        );
     }
 }

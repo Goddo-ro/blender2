@@ -28,7 +28,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
-import javax.vecmath.Vector3f;
+import com.cgvsu.math.Vector3f;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
