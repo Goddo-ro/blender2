@@ -233,20 +233,17 @@ public class GuiController {
 
     @FXML
     private void onMouseTriangulateClick() {
-        // TODO: create a function that gives an active model;
         try {
-            List<TreeItem<String>> selectedModels = modelController.getSelectedModels();
+            List<Model> selectedModels = modelController.getSelectedModels();
             if (selectedModels.size() == 0) {
-                logController.addLog("Model hasn't been triangulated as there is no selected models", Statuses.WARNING);
+                logController.addLog("Models haven't been triangulated as there is no selected models", Statuses.WARNING);
                 return;
             }
 
-            Model model = modelController.getModelByName(selectedModels.get(0).getValue());
-            assert model != null;
-
-            triangulateModel(model);
-
-            logController.addLog("Model " + model.getName() + " was successfully triangulated", Statuses.MESSAGE);
+            for (Model model : selectedModels) {
+                triangulateModel(model);
+                logController.addLog("Model " + model.getName() + " was successfully triangulated", Statuses.MESSAGE);
+            }
         } catch (Exception exception) {
             logController.addLog(exception.getMessage(), Statuses.ERROR);
         }
@@ -256,7 +253,7 @@ public class GuiController {
     private void onMouseDelVerticesClick() {
         // TODO: not change vertices if some of them are greater than max index
         try {
-            List<TreeItem<String>> selectedModels = modelController.getSelectedModels();
+            List<TreeItem<String>> selectedModels = modelController.getSelectedModelsNames();
             if (selectedModels.size() == 0) {
                 logController.addLog("Polygons haven't been deleted as there is no selected models", Statuses.WARNING);
                 return;
@@ -285,7 +282,7 @@ public class GuiController {
     @FXML
     private void onMouseDelPolygonsClick() {
         try {
-            List<TreeItem<String>> selectedModels = modelController.getSelectedModels();
+            List<TreeItem<String>> selectedModels = modelController.getSelectedModelsNames();
             if (selectedModels.size() == 0) {
                 logController.addLog("Indices haven't been deleted as there is no selected models", Statuses.WARNING);
                 return;
@@ -314,7 +311,7 @@ public class GuiController {
     @FXML
     private void onDelKeyClick(KeyEvent key) {
         if (key.getCode() == KeyCode.DELETE) {
-            modelController.removeActiveModels();
+            modelController.removeSelectedModels();
         }
     }
 

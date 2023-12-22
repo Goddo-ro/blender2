@@ -17,10 +17,10 @@ import java.util.List;
 import java.util.Objects;
 
 public class ModelController {
-    private final GuiController root;
     private final List<Model> modelsList = new ArrayList<>();
-    private AnchorPane anchorPane;
     private final TreeView<String> models;
+    private final GuiController root;
+    private AnchorPane anchorPane;
     private MultipleSelectionModel<TreeItem<String>> selectionModel;
 
     public ModelController(GuiController root, AnchorPane anchorPane, TreeView<String> models) {
@@ -59,8 +59,18 @@ public class ModelController {
         return null;
     }
 
-    List<TreeItem<String>> getSelectedModels() {
+    List<TreeItem<String>> getSelectedModelsNames() {
         return selectionModel.getSelectedItems();
+    }
+
+    List<Model> getSelectedModels() {
+        List<TreeItem<String>> selectedModelsNames = getSelectedModelsNames();
+        List<Model> result = new ArrayList<>();
+        for (TreeItem<String> modelName : selectedModelsNames) {
+            result.add(getModelByName(modelName.getValue()));
+        }
+
+        return result;
     }
 
     EventHandler<MouseEvent> modelClickHandler = (MouseEvent event) -> {
@@ -115,7 +125,7 @@ public class ModelController {
     }
 
     boolean isModelActive(Model model) {
-        for (TreeItem<String> item : getSelectedModels()) {
+        for (TreeItem<String> item : getSelectedModelsNames()) {
             if (item.getValue().equals(model.getName()))
                 return true;
         }
@@ -142,21 +152,11 @@ public class ModelController {
         }
     }
 
-    void expandTreeView(TreeItem<?> item) {
-        if (item != null && !item.isLeaf()) {
-            item.setExpanded(true);
-            for (TreeItem<?> child : item.getChildren()) {
-                expandTreeView(child);
-            }
-        }
-    }
-
-
     void removeModel(Model model) {
         modelsList.remove(model);
     }
 
-    void removeActiveModels() {
+    void removeSelectedModels() {
         for (int i = 0; i < modelsList.size(); i++) {
             if (isModelActive(modelsList.get(i))) {
                 modelsList.remove(i);
@@ -165,5 +165,17 @@ public class ModelController {
         }
 
         updateModels();
+
+        root.logController.addLog("Selected models successfully removed", Statuses.MESSAGE);
+    }
+
+
+    void expandTreeView(TreeItem<?> item) {
+        if (item != null && !item.isLeaf()) {
+            item.setExpanded(true);
+            for (TreeItem<?> child : item.getChildren()) {
+                expandTreeView(child);
+            }
+        }
     }
 }
