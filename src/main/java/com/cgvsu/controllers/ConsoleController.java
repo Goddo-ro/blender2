@@ -15,6 +15,7 @@ public class ConsoleController {
     boolean windowResizing;
 
     public ConsoleController(SplitPane mainSplit, Button toggleConsoleBtn) {
+        // TODO: fix toggle for full screen mode
         this.mainSplit = mainSplit;
         this.toggleConsoleBtn = toggleConsoleBtn;
 
