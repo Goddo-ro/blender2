@@ -6,6 +6,8 @@ package com.cgvsu.math;
 //        – Скалярного произведения
 //        – Векторного произведения (Для вектора размерности 3)
 
+import javax.vecmath.Point2f;
+
 public class Vector2f{
     private float  x;
     private float y;
@@ -20,15 +22,15 @@ public class Vector2f{
         this.y = 0;
     }
 
-    public double getX () {
+    public float getX () {
         return x;
     }
 
-    public double getY () {
+    public float getY () {
         return y;
     }
 
-    public double get(int index){
+    public float get(int index){
         switch (index){
             case 0: return x;
             case 1: return y;
@@ -71,6 +73,17 @@ public class Vector2f{
     //Скалярное произведение векторов
     public float dot(Vector2f other){
         return this.x * other.x + this.y * other.y;
+    }
+
+    public Vector2f to(Vector2f end) {
+        return new Vector2f(end.x - x, end.y - y);
+    }
+    public void set(float x, float y) {
+        this.x = x;
+        this.y = y;
+    }
+    public float crossMagnitude(Vector2f other) {
+        return this.x * other.y - this.y * other.x;
     }
 
 }
