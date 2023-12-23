@@ -7,7 +7,7 @@ package com.cgvsu.math;
 //        – Векторного произведения (Для вектора размерности 3)
 
 public class Vector2f{
-    private float  x;
+    private float x;
     private float y;
 
     public Vector2f (float x, float y) {
@@ -20,15 +20,15 @@ public class Vector2f{
         this.y = 0;
     }
 
-    public double getX () {
+    public float getX () {
         return x;
     }
 
-    public double getY () {
+    public float getY () {
         return y;
     }
 
-    public double get(int index){
+    public float get(int index){
         switch (index){
             case 0: return x;
             case 1: return y;
@@ -36,13 +36,29 @@ public class Vector2f{
         throw new IllegalArgumentException("Index out of bounds");
     }
 
+
+
     //Сложение векторов
     public Vector2f add(Vector2f other){
         return(new Vector2f(this.x + other.x, this.y + other.y));
     }
+
+    public static Vector2f add(Vector2f first, Vector2f second) {
+        return new Vector2f(
+                first.x + second.x,
+                first.y + second.y
+        );
+    }
     //Вычитание векторов
     public Vector2f deduct(Vector2f other){
         return(new Vector2f(this.x - other.x, this.y - other.y));
+    }
+
+    public static Vector2f deduct(Vector2f first, Vector2f second) {
+        return new Vector2f(
+                first.x - second.x,
+                first.y - second.y
+        );
     }
     //Умножение на скаляр
     public Vector2f multiply(float scalar){
@@ -62,11 +78,11 @@ public class Vector2f{
 
     //Нормализация вектора
     public Vector2f normalize(){
-        float length = length();
-        if (length == 0){
-            return new Vector2f(0, 0);
-        }
-        return new Vector2f(this.x / length, this.y / length);
+        float normalization = length() != 0 ? 1 / length() : 0;
+        return new Vector2f(
+                this.x * normalization,
+                this.y * normalization
+        );
     }
     //Скалярное произведение векторов
     public float dot(Vector2f other){

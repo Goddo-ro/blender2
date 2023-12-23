@@ -15,12 +15,13 @@ public class Matrix4f{
     }
 
     public Matrix4f () {
-        this.matrix = new float[][]{
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 0, 0, 0}
-        };
+        this.matrix = new float[][]
+                {
+                        {0, 0, 0, 0},
+                        {0, 0, 0, 0},
+                        {0, 0, 0, 0},
+                        {0, 0, 0, 0}
+                };
     }
 
     public float[][] getMatrix() {
@@ -79,6 +80,19 @@ public class Matrix4f{
                 result[i][j] = 0;
                 for (int k = 0; k < 4; k++){
                     result[i][j] += this.matrix[i][k] * other.matrix[k][j];
+                }
+            }
+        }
+        return new Matrix4f(result);
+    }
+
+    public static Matrix4f multiply(Matrix4f first, Matrix4f second) {
+        float[][] result = new float[4][4];
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                result[i][j] = 0;
+                for (int k = 0; k < 4; k++) {
+                    result[i][j] += first.matrix[i][j] * second.matrix[k][j];
                 }
             }
         }

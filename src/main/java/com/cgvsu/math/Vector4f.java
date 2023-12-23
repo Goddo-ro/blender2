@@ -13,6 +13,27 @@ public class Vector4f {
         this.w = w;
     }
 
+    public Vector4f() {
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
+        this.w = 0;
+    }
+    public float getX() {
+        return this.x;
+    }
+
+    public float getY () {
+        return y;
+    }
+
+    public float getZ () {
+        return z;
+    }
+
+    public float getW () {
+        return w;
+    }
     public float get(int index) {
         switch (index){
             case 0: return x;
@@ -27,9 +48,27 @@ public class Vector4f {
         return new Vector4f(this.x + other.x, this.y + other.y, this.z + other.z, this.w + other.w);
     }
 
+    public static Vector4f add(Vector4f first, Vector4f second) {
+        return new Vector4f(
+                first.x + second.x,
+                first.y + second.y,
+                first.z + second.z,
+                first.w + second.z
+        );
+    }
+
     // Вычитание векторов
     public Vector4f deduct(Vector4f other) {
         return new Vector4f(this.x - other.x, this.y - other.y, this.z - other.z, this.w - other.w);
+    }
+
+    public static Vector4f deduct(Vector4f first, Vector4f second) {
+        return new Vector4f(
+                first.x - second.x,
+                first.y - second.y,
+                first.z - second.z,
+                first.w - second.z
+        );
     }
 
     // Умножение на скаляр
@@ -50,11 +89,13 @@ public class Vector4f {
     }
     //Нормализация вектора
     public Vector4f normalize(){
-        float length = length();
-        if (length == 0){
-            return new Vector4f(0, 0, 0, 0);
-        }
-        return new Vector4f(this.x / length, this.y / length, this.z / length, this.w / length);
+        float normalization = length() != 0 ? 1 / length() : 0;
+        return new Vector4f(
+                this.x * normalization,
+                this.y * normalization,
+                this.z * normalization,
+                this.w * normalization
+        );
     }
     //Скалярное произведение векторов
     public float dot(Vector4f other){

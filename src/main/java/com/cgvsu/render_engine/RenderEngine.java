@@ -9,9 +9,6 @@ import com.cgvsu.model.Model;
 import com.cgvsu.math.Vector3f;
 import com.cgvsu.math.matrix.Matrix4f;
 
-//import javax.vecmath.Matrix4f;
-//import javax.vecmath.Vector3f;
-
 import javax.vecmath.Point2f;
 
 import static com.cgvsu.render_engine.GraphicConveyor.*;
@@ -32,8 +29,6 @@ public class RenderEngine {
 
         Matrix4f modelViewMatrix = modelMatrix.multiply(viewMatrix);
         Matrix4f modelViewProjectionMatrix = modelViewMatrix.multiply(projectionMatrix);
-//        modelViewProjectionMatrix.mul(viewMatrix);
-//        modelViewProjectionMatrix.mul(projectionMatrix);
 
         if (isActive) {
             graphicsContext.setStroke(new Color(0, 0.67, 0.71, 1));

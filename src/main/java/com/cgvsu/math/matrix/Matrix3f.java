@@ -18,6 +18,15 @@ public class Matrix3f{
         this.matrix = data;
     }
 
+    public Matrix3f () {
+        this.matrix = new float[][]
+                {
+                        {0,0,0},
+                        {0,0,0},
+                        {0,0,0}
+                };
+    }
+
     public float[][] getMatrix() {
         return matrix;
     }
@@ -83,15 +92,6 @@ public class Matrix3f{
         return new Matrix3f(result);
     }
 
-    // Быстрое задание нулевой матрицы
-    public static Matrix3f zero(){
-        float[][] zeroMatrix = new float[][]{
-                {0, 0, 0},
-                {0, 0, 0},
-                {0, 0, 0}
-        };
-        return new Matrix3f(zeroMatrix);
-    }
     // Быстрое задание единичной матрицы
     public static Matrix3f unit(){
         float[][] unitMatrix = new float[][]{
@@ -116,7 +116,7 @@ public class Matrix3f{
         for (int i = 0; i < 3; i++){
             for (int j = 0; j < 3; j++) {
                 matrix[i][j] = matrix[i][j]/det;
-                if ((i == 0 && j == 1) || (i == 1 && j == 0) || (i == 1 && j == 2) || (i == 2 && j == 1)){
+                if ((i + j) % 2 != 0){
                     matrix[i][j] *= -1;
                 }
             }
