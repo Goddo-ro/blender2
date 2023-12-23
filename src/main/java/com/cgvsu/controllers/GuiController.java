@@ -2,6 +2,7 @@ package com.cgvsu.controllers;
 
 
 import com.cgvsu.log.Statuses;
+import com.cgvsu.math.Vector3f;
 import com.cgvsu.model.Model;
 import com.cgvsu.objreader.ObjReader;
 
@@ -22,7 +23,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
-import javax.vecmath.Vector3f;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;

@@ -32,8 +32,6 @@ public class RenderEngine {
 
         Matrix4f modelViewMatrix = modelMatrix.multiply(viewMatrix);
         Matrix4f modelViewProjectionMatrix = modelViewMatrix.multiply(projectionMatrix);
-//        modelViewProjectionMatrix.mul(viewMatrix);
-//        modelViewProjectionMatrix.mul(projectionMatrix);
 
         if (isActive) {
             graphicsContext.setStroke(new Color(0, 0.67, 0.71, 1));
