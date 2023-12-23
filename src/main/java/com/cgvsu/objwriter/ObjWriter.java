@@ -1,9 +1,9 @@
 package com.cgvsu.objwriter;
 
-import com.cgvsu.math.Vector2f;
-import com.cgvsu.math.Vector3f;
 import com.cgvsu.model.Model;
 import com.cgvsu.model.Polygon;
+import com.cgvsu.math.Vector3f;
+import com.cgvsu.math.Vector2f;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -50,7 +50,7 @@ public class ObjWriter {
 
         // Проходимся по каждой вершине и записываем ее координаты с токетом
         for (Vector3f vertex : vertices) {
-            bufferedWriter.write(OBJ_VERTEX_TOKEN + "  " + vertex.x + " " + vertex.y + " " + vertex.z + "\n");
+            bufferedWriter.write(OBJ_VERTEX_TOKEN + "  " + vertex.getX() + " " + vertex.getY() + " " + vertex.getZ() + "\n");
         }
     }
     protected static void writeTextureVertices(BufferedWriter bufferedWriter,
@@ -58,7 +58,7 @@ public class ObjWriter {
         if (textureVertices.size() != 0) {
             // Проходимся по каждой текстурной вершине и записываем ее координаты с токеном
             for (Vector2f vertex : textureVertices) {
-                bufferedWriter.write(OBJ_TEXTURE_TOKEN + " " + vertex.x + " " + vertex.y + "\n");
+                bufferedWriter.write(OBJ_TEXTURE_TOKEN + " " + vertex.getX() + " " + vertex.getY() + "\n");
             }
         }
     }
@@ -68,7 +68,7 @@ public class ObjWriter {
         if (normals.size() != 0) {
             // Проходимся по всем нормалям и записываем их координаты
             for (Vector3f normal : normals) {
-                bufferedWriter.write(OBJ_NORMAL_TOKEN + " " + normal.x + " " + normal.y + " " + normal.z + "\n");
+                bufferedWriter.write(OBJ_NORMAL_TOKEN + " " + normal.getX() + " " + normal.getY() + " " + normal.getZ() + "\n");
             }
         }
     }
