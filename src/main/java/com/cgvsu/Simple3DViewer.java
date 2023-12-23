@@ -28,7 +28,7 @@ public class Simple3DViewer extends Application {
         viewport.prefWidthProperty().bind(scene.widthProperty());
         viewport.prefHeightProperty().bind(scene.heightProperty());
 //        stage.setFullScreen(true);
-        stage.setTitle("Simple3DViewer");
+        stage.setTitle("Blender2.0");
         stage.getIcons().add(new Image(getClass().getResource("images/icon.png").openStream()));
         stage.setScene(scene);
         stage.show();

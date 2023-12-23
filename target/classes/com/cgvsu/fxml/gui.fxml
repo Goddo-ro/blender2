@@ -7,6 +7,7 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
@@ -19,132 +20,145 @@
 <?import javafx.scene.text.Text?>
 
 <AnchorPane fx:id="anchorPane" onKeyPressed="#onDelKeyClick" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cgvsu.controllers.GuiController">
-    <Canvas fx:id="canvas" height="875.0" layoutY="25.0" width="1200" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />
-    <MenuBar prefHeight="25.0" prefWidth="1200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <Menu mnemonicParsing="false" text="File">
-            <MenuItem mnemonicParsing="false" onAction="#onOpenModelMenuItemClick" text="Load Model">
-            <accelerator>
-                <KeyCodeCombination alt="UP" code="F" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-            </accelerator>
-            </MenuItem>
-        </Menu>
-        <Menu mnemonicParsing="false" text="Camera Options">
-            <MenuItem mnemonicParsing="false" onAction="#handleCameraForward" text="Forward">
-                <accelerator>
-                    <KeyCodeCombination alt="UP" code="UP" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                </accelerator>
-            </MenuItem>
-            <MenuItem mnemonicParsing="false" onAction="#handleCameraBackward" text="Backward">
-                <accelerator>
-                    <KeyCodeCombination alt="UP" code="DOWN" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                </accelerator>
-            </MenuItem>
-            <MenuItem mnemonicParsing="false" onAction="#handleCameraLeft" text="Left">
-                <accelerator>
-                    <KeyCodeCombination alt="UP" code="LEFT" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                </accelerator>
-            </MenuItem>
-            <MenuItem mnemonicParsing="false" onAction="#handleCameraRight" text="Right">
-                <accelerator>
-                    <KeyCodeCombination alt="UP" code="RIGHT" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                </accelerator>
-            </MenuItem>
-            <MenuItem mnemonicParsing="false" onAction="#handleCameraUp" text="Up">
-                <accelerator>
-                    <KeyCodeCombination alt="UP" code="W" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                </accelerator>
-            </MenuItem>
-            <MenuItem mnemonicParsing="false" onAction="#handleCameraDown" text="Down">
-                <accelerator>
-                    <KeyCodeCombination alt="UP" code="S" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                </accelerator>
-            </MenuItem>
-        </Menu>
-    </MenuBar>
-   <BorderPane fx:id="modelsContainer" layoutX="1000.0" layoutY="23.0" prefHeight="529.0" prefWidth="300.0" style="-fx-background-color: #393E46;" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
-      <top>
-         <Button fx:id="toggleMenu" alignment="TOP_LEFT" mnemonicParsing="false" onMouseClicked="#onMouseToggleMenuClick" prefHeight="23.0" prefWidth="301.0" style="-fx-background-color: #222831; -fx-text-fill: #EEEEEE;" text="+">
-            <font>
-               <Font name="Monospaced Bold" size="12.0" />
-            </font></Button>
-      </top>
-      <center>
-         <TreeView fx:id="models" prefHeight="760.0" prefWidth="300.0" style="-fx-background-color: #393E46;" BorderPane.alignment="TOP_RIGHT" />
-      </center>
-      <opaqueInsets>
-         <Insets />
-      </opaqueInsets>
-   </BorderPane>
-   <BorderPane fx:id="modelsManipulations" layoutY="25.0" minWidth="25.0" prefHeight="525.0" prefWidth="300.0" style="-fx-background-color: #393E46;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="25.0">
-      <top>
-         <Button fx:id="toggleManipulations" alignment="TOP_RIGHT" mnemonicParsing="false" onMouseClicked="#onMouseToggleManipulationsClick" prefHeight="23.0" prefWidth="941.0" style="-fx-background-color: #222831; -fx-text-fill: #EEEEEE;" text="+" textAlignment="RIGHT" wrapText="true">
-            <font>
-               <Font name="Monospaced Bold" size="12.0" />
-            </font>
-         </Button>
-      </top>
-      <opaqueInsets>
-         <Insets />
-      </opaqueInsets>
-      <center>
-         <ScrollPane fx:id="manipulationsScroll" fitToWidth="true" minWidth="25.0" prefHeight="525.0" prefWidth="300.0" style="-fx-background-color: #393E46;" BorderPane.alignment="TOP_CENTER">
-           <content>
-             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="505.0" prefWidth="298.0" style="-fx-background-color: #393E46;">
-                  <children>
-                     <TabPane minWidth="0.0" prefHeight="851.0" prefWidth="298.0" style="-fx-background-color: #393E46;" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="-1900.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                       <tabs>
-                         <Tab text="Move">
-                           <content>
-                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                           </content>
-                         </Tab>
-                           <Tab text="Change">
-                             <content>
-                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                    <children>
-                                       <Button fx:id="triangulateBtn" layoutX="14.0" layoutY="187.0" mnemonicParsing="false" onMouseClicked="#onMouseTriangulateClick" prefHeight="25.0" prefWidth="300.0" text="Triangulate Models" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" />
-                                       <TextField fx:id="indicesText" layoutX="14.0" layoutY="41.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" />
-                                       <Text layoutX="14.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-fill: #ffffff;" text="Enter indices separated by spaces" wrappingWidth="268.13671875" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="15.86328125" />
-                                       <Button fx:id="deleteVerticesBtn" layoutX="14.0" layoutY="79.0" mnemonicParsing="false" onMouseClicked="#onMouseDelVerticesClick" prefHeight="25.0" prefWidth="269.0" text="Delete vertices" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" />
-                                       <Button fx:id="deletePolygonsBtn" layoutX="14.0" layoutY="117.0" mnemonicParsing="false" onMouseClicked="#onMouseDelPolygonsClick" prefHeight="25.0" prefWidth="269.0" text="Delete polygons" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" />
-                                       <Text layoutX="15.0" layoutY="173.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-fill: #ffffff;" text="Triangulation:" wrappingWidth="268.13671875" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" />
-                                    </children>
-                                 </AnchorPane>
-                             </content>
-                           </Tab>
-                       </tabs>
-                     </TabPane>
-                  </children>
-               </AnchorPane>
-           </content>
-         </ScrollPane>
-      </center>
-   </BorderPane>
-   <BorderPane fx:id="consoleContainer" layoutY="569.0" maxHeight="350.0" minHeight="20.0" prefHeight="350.0" prefWidth="1200.0" style="-fx-background-color: #393E46;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-      <opaqueInsets>
-         <Insets />
-      </opaqueInsets>
-      <top>
-         <Button fx:id="toggleConsoleBtn" alignment="TOP_LEFT" mnemonicParsing="false" onMouseClicked="#onMouseToggleConsoleClick" prefHeight="0.0" prefWidth="1200.0" style="-fx-background-color: #222831; -fx-text-fill: #EEEEEE;" text="+">
-            <font>
-               <Font name="Monospaced Bold" size="12.0" />
-            </font>
-         </Button>
-      </top>
-      <center>
-         <ScrollPane fx:id="consoleScroll" fitToWidth="true" minHeight="0.0" prefHeight="363.0" prefWidth="1200.0" style="-fx-background-color: #393E46;" BorderPane.alignment="BOTTOM_CENTER">
-           <content>
-             <AnchorPane fx:id="consolePane" minHeight="325.0" minWidth="0.0" prefHeight="0.0" prefWidth="1675.0">
-                  <children>
-                     <VBox fx:id="console" prefHeight="0.0" prefWidth="1200.0" style="-fx-background-color: #393E46;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="always">
-                        <padding>
-                           <Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
-                        </padding>
-                     </VBox>
-                  </children>
-               </AnchorPane>
-           </content>
-         </ScrollPane>
-      </center>
-   </BorderPane>
+   <SplitPane fx:id="mainSplit" dividerPositions="0.5" layoutX="8.0" orientation="VERTICAL" prefHeight="900.0" prefWidth="1200.0" AnchorPane.bottomAnchor="-1.0" AnchorPane.leftAnchor="-1.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="0.0">
+     <items>
+       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+            <children>
+                <Canvas fx:id="canvas" height="875.0" width="1200" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />
+                <MenuBar prefHeight="25.0" prefWidth="1200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <Menu mnemonicParsing="false" text="File">
+                        <MenuItem mnemonicParsing="false" onAction="#onOpenModelMenuItemClick" text="Load Model">
+                        <accelerator>
+                            <KeyCodeCombination alt="UP" code="F" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                        </accelerator>
+                        </MenuItem>
+                    </Menu>
+                    <Menu mnemonicParsing="false" text="Camera Options">
+                        <MenuItem mnemonicParsing="false" onAction="#handleCameraForward" text="Forward">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="UP" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#handleCameraBackward" text="Backward">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="DOWN" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#handleCameraLeft" text="Left">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="LEFT" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#handleCameraRight" text="Right">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="RIGHT" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#handleCameraUp" text="Up">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="W" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#handleCameraDown" text="Down">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="S" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                            </accelerator>
+                        </MenuItem>
+                    </Menu>
+                </MenuBar>
+               <BorderPane fx:id="modelsContainer" prefHeight="529.0" prefWidth="300.0" style="-fx-background-color: #393E46;" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
+                  <top>
+                     <Button fx:id="toggleMenu" alignment="TOP_LEFT" mnemonicParsing="false" onMouseClicked="#onMouseToggleMenuClick" prefHeight="23.0" prefWidth="301.0" style="-fx-background-color: #222831; -fx-text-fill: #EEEEEE;" text="+">
+                        <font>
+                           <Font name="Monospaced Bold" size="12.0" />
+                        </font>
+                     </Button>
+                  </top>
+                  <center>
+                     <TreeView fx:id="models" prefHeight="760.0" prefWidth="300.0" style="-fx-background-color: #393E46;" BorderPane.alignment="TOP_RIGHT" />
+                  </center>
+                  <opaqueInsets>
+                     <Insets />
+                  </opaqueInsets>
+               </BorderPane>
+               <BorderPane fx:id="modelsManipulations" minWidth="25.0" prefHeight="525.0" prefWidth="300.0" style="-fx-background-color: #393E46;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="25.0">
+                  <top>
+                     <Button fx:id="toggleManipulations" alignment="TOP_RIGHT" mnemonicParsing="false" onMouseClicked="#onMouseToggleManipulationsClick" prefHeight="23.0" prefWidth="941.0" style="-fx-background-color: #222831; -fx-text-fill: #EEEEEE;" text="+" textAlignment="RIGHT" wrapText="true">
+                        <font>
+                           <Font name="Monospaced Bold" size="12.0" />
+                        </font>
+                     </Button>
+                  </top>
+                  <opaqueInsets>
+                     <Insets />
+                  </opaqueInsets>
+                  <center>
+                     <ScrollPane fx:id="manipulationsScroll" fitToWidth="true" minWidth="25.0" prefHeight="525.0" prefWidth="300.0" style="-fx-background-color: #393E46;" BorderPane.alignment="TOP_CENTER">
+                       <content>
+                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="505.0" prefWidth="298.0" style="-fx-background-color: #393E46;">
+                              <children>
+                                 <TabPane minWidth="0.0" prefHeight="851.0" prefWidth="298.0" style="-fx-background-color: #393E46;" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="-1900.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                   <tabs>
+                                     <Tab text="Move">
+                                       <content>
+                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                       </content>
+                                     </Tab>
+                                       <Tab text="Change">
+                                         <content>
+                                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                                <children>
+                                                   <Button fx:id="triangulateBtn" layoutX="14.0" layoutY="187.0" mnemonicParsing="false" onMouseClicked="#onMouseTriangulateClick" prefHeight="25.0" prefWidth="300.0" text="Triangulate Models" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" />
+                                                   <TextField fx:id="indicesText" layoutX="14.0" layoutY="41.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" />
+                                                   <Text layoutX="14.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-fill: #ffffff;" text="Enter indices separated by spaces" wrappingWidth="268.13671875" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="15.86328125" />
+                                                   <Button fx:id="deleteVerticesBtn" layoutX="14.0" layoutY="79.0" mnemonicParsing="false" onMouseClicked="#onMouseDelVerticesClick" prefHeight="25.0" prefWidth="269.0" text="Delete vertices" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" />
+                                                   <Button fx:id="deletePolygonsBtn" layoutX="14.0" layoutY="117.0" mnemonicParsing="false" onMouseClicked="#onMouseDelPolygonsClick" prefHeight="25.0" prefWidth="269.0" text="Delete polygons" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" />
+                                                   <Text layoutX="15.0" layoutY="173.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-fill: #ffffff;" text="Triangulation:" wrappingWidth="268.13671875" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" />
+                                                </children>
+                                             </AnchorPane>
+                                         </content>
+                                       </Tab>
+                                   </tabs>
+                                 </TabPane>
+                              </children>
+                           </AnchorPane>
+                       </content>
+                     </ScrollPane>
+                  </center>
+               </BorderPane>
+            </children>
+         </AnchorPane>
+       <AnchorPane fx:id="consoleSplit" minHeight="0.0" minWidth="0.0" prefHeight="251.0" prefWidth="1198.0">
+            <children>
+               <BorderPane fx:id="consoleContainer" maxHeight="350.0" minHeight="20.0" prefHeight="350.0" prefWidth="1200.0" style="-fx-background-color: #393E46;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="-1.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="0.0">
+                  <opaqueInsets>
+                     <Insets />
+                  </opaqueInsets>
+                  <top>
+                     <Button fx:id="toggleConsoleBtn" alignment="TOP_LEFT" mnemonicParsing="false" onMouseClicked="#onMouseToggleConsoleClick" prefHeight="0.0" prefWidth="1200.0" style="-fx-background-color: #222831; -fx-text-fill: #EEEEEE;" text="-">
+                        <font>
+                           <Font name="Monospaced Bold" size="12.0" />
+                        </font>
+                     </Button>
+                  </top>
+                  <center>
+                     <ScrollPane fx:id="consoleScroll" fitToWidth="true" minHeight="0.0" prefWidth="1200.0" style="-fx-background-color: #393E46;" BorderPane.alignment="BOTTOM_CENTER">
+                       <content>
+                         <AnchorPane fx:id="consolePane" minHeight="-Infinity" minWidth="0.0" prefWidth="1675.0">
+                              <children>
+                                 <VBox fx:id="console" prefWidth="1196.0" style="-fx-background-color: #393E46;" AnchorPane.bottomAnchor="-0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="always">
+                                    <padding>
+                                       <Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+                                    </padding>
+                                 </VBox>
+                              </children>
+                           </AnchorPane>
+                       </content>
+                     </ScrollPane>
+                  </center>
+               </BorderPane>
+            </children>
+         </AnchorPane>
+     </items>
+   </SplitPane>
 </AnchorPane>
