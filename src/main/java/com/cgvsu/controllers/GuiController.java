@@ -11,7 +11,6 @@ import com.cgvsu.render_engine.RenderEngine;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -29,7 +28,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
-import static com.cgvsu.utils.models_utils.Triangulation.triangulateModel;
+import static com.cgvsu.utils.models_utils.ModelConverter.triPolyModelToModel;
+import static com.cgvsu.utils.models_utils.Triangulation.getTriangulatedModel;
 import static com.cgvsu.utils.ListUtils.stringToNumberList;
 import static com.cgvsu.utils.models_utils.PolygonRemover.removePolygons;
 import static com.cgvsu.utils.models_utils.VerticesRemover.deleteVertexes;
@@ -233,7 +233,8 @@ public class GuiController {
             }
 
             for (Model model : selectedModels) {
-                triangulateModel(model);
+                Model triangulatedModel = triPolyModelToModel(getTriangulatedModel(model));
+                modelController.replaceModel(model.getName(), triangulatedModel);
                 logController.addLog("Model " + model.getName() + " was successfully triangulated", Statuses.MESSAGE);
             }
         } catch (Exception exception) {

@@ -133,6 +133,15 @@ public class ModelController {
         return false;
     }
 
+    void replaceModel(String modelName, Model newModel) {
+        for (int i = 0; i < modelsList.size(); i++) {
+            if (modelsList.get(i).getName().equals(modelName)) {
+                modelsList.set(i, newModel);
+                return;
+            }
+        }
+    }
+
     void saveModel(Model model) {
         // TODO: fix triangulated models saving
         FileChooser fileChooser = new FileChooser();
