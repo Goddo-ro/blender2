@@ -243,6 +243,7 @@ public class GuiController {
 
     @FXML
     private void onMouseDelVerticesClick() {
+        // TODO: move models' methods to ModelController
         // TODO: not change vertices if some of them are greater than max index
         try {
             List<TreeItem<String>> selectedModels = modelController.getSelectedModelsNames();
