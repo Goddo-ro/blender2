@@ -1,29 +1,24 @@
-package com.cgvsu;
+package com.cgvsu.controllers;
 
-import com.cgvsu.log.Log;
+
 import com.cgvsu.log.Statuses;
+import com.cgvsu.math.Vector3f;
 import com.cgvsu.model.Model;
 import com.cgvsu.objreader.ObjReader;
-import com.cgvsu.objwriter.ObjWriter;
+
 import com.cgvsu.render_engine.Camera;
 import com.cgvsu.render_engine.RenderEngine;
-import com.cgvsu.math.Vector3f;
-
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
@@ -35,7 +30,6 @@ import java.util.*;
 
 import static com.cgvsu.utils.models_utils.Triangulation.triangulateModel;
 import static com.cgvsu.utils.ListUtils.stringToNumberList;
-import static com.cgvsu.utils.LogsUtils.generateLabelFromLog;
 import static com.cgvsu.utils.models_utils.PolygonRemover.removePolygons;
 import static com.cgvsu.utils.models_utils.VerticesRemover.deleteVertexes;
 import static com.cgvsu.utils.StringUtils.generateUniqueName;
@@ -45,11 +39,10 @@ public class GuiController {
     final private float TRANSLATION = 1.5F;
 
     @FXML
-    AnchorPane anchorPane;
-
+    private AnchorPane anchorPane;
 
     @FXML
-    private Canvas canvas;
+    Canvas canvas;
 
     @FXML
     private BorderPane modelsContainer;
@@ -92,17 +85,12 @@ public class GuiController {
     @FXML
     private VBox console;
 
-    private Model mesh = null;
-
-    private final List<Model> modelsList = new ArrayList<>();
+    private ModelController modelController;
+    public LogController logController;
 
     private boolean isMenuClosed = false;
     private boolean isConsoleClosed = false;
     private boolean isManipulationsClosed = false;
-
-    private MultipleSelectionModel<TreeItem<String>> selectionModel;
-
-    private final List<Log> logs = new ArrayList<>();
 
     private final int OPENED_MENU_WIDTH = 350;
     private final int CLOSED_MENU_WIDTH = 20;
@@ -117,159 +105,6 @@ public class GuiController {
 
     private Timeline timeline;
 
-    EventHandler<MouseEvent> modelClickHandler = (MouseEvent event) -> {
-        if (!event.getPickResult().getIntersectedNode().getParent().toString().contains("'")) {
-            return;
-        }
-
-        String name = event.getPickResult().getIntersectedNode().getParent().toString().split("'")[1];
-        if (!name.endsWith(".obj")) {
-            return;
-        }
-
-        if (Objects.equals(event.getButton().toString(), "SECONDARY")) {
-            double sceneX = event.getSceneX();
-            double sceneY = event.getSceneY();
-
-            Button saveBtn = new Button("Save");
-            saveBtn.setAlignment(Pos.BASELINE_LEFT);
-            saveBtn.setPrefWidth(100);
-
-            TilePane pane = new TilePane(saveBtn);
-            pane.setLayoutX(sceneX);
-            pane.setLayoutY(sceneY);
-
-            anchorPane.getChildren().add(pane);
-
-            pane.addEventHandler(MouseEvent.MOUSE_EXITED, (MouseEvent exitedEvent) -> {
-                if (anchorPane.getChildren().contains(pane)) {
-                    anchorPane.getChildren().remove(pane);
-                }
-            });
-
-            saveBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent clickEvent) -> {
-                pane.setOpacity(0);
-                saveModel(Objects.requireNonNull(getModelByName(name)));
-            });
-        }
-    };
-
-    private void updateModels() {
-        TreeItem<String> modelsNode = new TreeItem<>("Models");
-        for (Model model : modelsList) {
-            TreeItem<String> modelItem = new TreeItem<>(model.getName());
-            modelsNode.getChildren().add(modelItem);
-        }
-
-        models.getRoot().getChildren().remove(0);
-        models.getRoot().getChildren().add(modelsNode);
-        expandTreeView(models.getRoot());
-
-        models.addEventHandler(MouseEvent.MOUSE_CLICKED, modelClickHandler);
-    }
-
-    private void expandTreeView(TreeItem<?> item) {
-        if (item != null && !item.isLeaf()) {
-            item.setExpanded(true);
-            for (TreeItem<?> child : item.getChildren()) {
-                expandTreeView(child);
-            }
-        }
-    }
-
-    private List<String> getModelsName() {
-        List<String> names = new ArrayList<>();
-        for (Model model : modelsList) {
-            names.add(model.getName());
-        }
-
-        return names;
-    }
-
-    private Model getModelByName(String name) {
-        for (Model model : modelsList) {
-            if (model.getName().equals(name))
-                return model;
-        }
-
-        return null;
-    }
-
-    private void saveModel(Model model) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Model (*.obj)", "*.obj"));
-        fileChooser.setTitle("Save Model");
-
-        fileChooser.setInitialFileName(model.getName());
-
-        File selectedFile = fileChooser.showSaveDialog(canvas.getScene().getWindow());
-
-        if (selectedFile != null) {
-            try {
-                ObjWriter.write(model, selectedFile.getAbsolutePath());
-                addLog("Model " + model.getName() + " was successfully saved", Statuses.MESSAGE);
-            } catch (Exception exception) {
-                addLog(exception.getMessage(), Statuses.ERROR);
-            }
-        }
-    }
-
-    private void removeModel(Model model) {
-        modelsList.remove(model);
-    }
-
-    public void addLog(String body, Statuses status) {
-        logs.add(0, new Log(body, status));
-        updateLogs();
-    }
-
-    public List<TreeItem<String>> getSelectedModels() {
-        return selectionModel.getSelectedItems();
-    }
-
-    public boolean isModelActive(Model model) {
-        for (TreeItem<String> item : getSelectedModels()) {
-            if (item.getValue().equals(model.getName()))
-                return true;
-        }
-
-        return false;
-    }
-
-    private void removeActiveModels() {
-        for (int i = 0; i < modelsList.size(); i++) {
-            if (isModelActive(modelsList.get(i))) {
-                modelsList.remove(i);
-                i--;
-            }
-        }
-
-        updateModels();
-    }
-
-    private void initializeModels() {
-        TreeItem<String> rootTreeNode = new TreeItem<>("Objects");
-        TreeItem<String> modelsNode = new TreeItem<>("Models");
-        rootTreeNode.getChildren().add(modelsNode);
-        models.setRoot(rootTreeNode);
-
-        selectionModel = models.getSelectionModel();
-        selectionModel.setSelectionMode(SelectionMode.MULTIPLE);
-    }
-
-    private void updateLogs() {
-        console.getChildren().clear();
-        for (Log log : logs) {
-            Label label = generateLabelFromLog(log);
-            console.getChildren().add(label);
-        }
-
-        console.setMinHeight(console.getChildren().size() * 30 - 12);
-        consolePane.setPrefHeight(console.getChildren().size() * 30 - 12);
-        consoleScroll.setVmax(console.getChildren().size() * 30 - 12);
-        consoleScroll.setVvalue(console.getChildren().size() * 30 - 12);
-    }
-
     private List<Integer> getIndicesFromRemoveInput() {
         List<String> elements = new ArrayList<>(Arrays.asList(indicesText.getText().split(" ")));
         return stringToNumberList(elements);
@@ -283,11 +118,12 @@ public class GuiController {
         timeline = new Timeline();
         timeline.setCycleCount(Animation.INDEFINITE);
 
+        modelController = new ModelController(this, anchorPane, models);
+        logController = new LogController(console, consolePane, consoleScroll);
+
         onMouseToggleConsoleClick();
         onMouseToggleMenuClick();
         onMouseToggleManipulationsClick();
-
-        initializeModels();
 
         KeyFrame frame = new KeyFrame(Duration.millis(15), event -> {
             double width = canvas.getWidth();
@@ -305,12 +141,13 @@ public class GuiController {
             }
 
 
-            if (logs.size() != console.getChildren().size()) {
-                updateLogs();
+            if (logController.getLogs().size() != console.getChildren().size()) {
+                logController.updateLogs();
             }
 
-            for (Model model : modelsList) {
-                RenderEngine.render(canvas.getGraphicsContext2D(), camera, model, (int) width, (int) height, isModelActive(model));
+            for (Model model : modelController.getModelsList()) {
+                RenderEngine.render(canvas.getGraphicsContext2D(), camera, model,
+                        (int) width, (int) height, modelController.isModelActive(model));
             }
         });
 
@@ -333,13 +170,13 @@ public class GuiController {
 
         try {
             String fileContent = Files.readString(fileName);
-            mesh = ObjReader.read(fileContent);
-            mesh.setName(generateUniqueName(file.getName(), getModelsName()));
-            modelsList.add(mesh);
-            updateModels();
-            addLog("Model " + mesh.getName() + " was successfully loaded", Statuses.MESSAGE);
+            Model mesh = ObjReader.read(fileContent);
+            mesh.setName(generateUniqueName(file.getName(), modelController.getModelsName()));
+            modelController.getModelsList().add(mesh);
+            modelController.updateModels();
+            logController.addLog("Model " + mesh.getName() + " was successfully loaded", Statuses.MESSAGE);
         } catch (Exception exception) {
-            addLog(exception.getMessage(), Statuses.ERROR);
+            logController.addLog(exception.getMessage(), Statuses.ERROR);
         }
     }
 
@@ -396,22 +233,19 @@ public class GuiController {
 
     @FXML
     private void onMouseTriangulateClick() {
-        // TODO: create a function that gives an active model;
         try {
-            List<TreeItem<String>> selectedModels = getSelectedModels();
+            List<Model> selectedModels = modelController.getSelectedModels();
             if (selectedModels.size() == 0) {
-                addLog("Model hasn't been triangulated as there is no selected models", Statuses.WARNING);
+                logController.addLog("Models haven't been triangulated as there is no selected models", Statuses.WARNING);
                 return;
             }
 
-            Model model = getModelByName(selectedModels.get(0).getValue());
-            assert model != null;
-
-            triangulateModel(model);
-
-            addLog("Model " + model.getName() + " was successfully triangulated", Statuses.MESSAGE);
+            for (Model model : selectedModels) {
+                triangulateModel(model);
+                logController.addLog("Model " + model.getName() + " was successfully triangulated", Statuses.MESSAGE);
+            }
         } catch (Exception exception) {
-            addLog(exception.getMessage(), Statuses.ERROR);
+            logController.addLog(exception.getMessage(), Statuses.ERROR);
         }
     }
 
@@ -419,65 +253,65 @@ public class GuiController {
     private void onMouseDelVerticesClick() {
         // TODO: not change vertices if some of them are greater than max index
         try {
-            List<TreeItem<String>> selectedModels = getSelectedModels();
+            List<TreeItem<String>> selectedModels = modelController.getSelectedModelsNames();
             if (selectedModels.size() == 0) {
-                addLog("Polygons haven't been deleted as there is no selected models", Statuses.WARNING);
+                logController.addLog("Polygons haven't been deleted as there is no selected models", Statuses.WARNING);
                 return;
             }
 
-            Model model = getModelByName(selectedModels.get(0).getValue());
+            Model model = modelController.getModelByName(selectedModels.get(0).getValue());
             assert model != null;
 
             List<Integer> indices = getIndicesFromRemoveInput();
 
             deleteVertexes(model, indices);
 
-            addLog("Vertices successfully deleted", Statuses.MESSAGE);
+            logController.addLog("Vertices successfully deleted", Statuses.MESSAGE);
 
             if (model.polygons.size() == 0) {
-                removeModel(model);
-                addLog("Model was removed as it hadn't any polygons", Statuses.WARNING);
+                modelController.removeModel(model);
+                logController.addLog("Model was removed as it hadn't any polygons", Statuses.WARNING);
             }
 
-            updateModels();
+            modelController.updateModels();
         } catch (Exception exception) {
-            addLog(exception.getMessage(), Statuses.ERROR);
+            logController.addLog(exception.getMessage(), Statuses.ERROR);
         }
     }
 
     @FXML
     private void onMouseDelPolygonsClick() {
         try {
-            List<TreeItem<String>> selectedModels = getSelectedModels();
+            List<TreeItem<String>> selectedModels = modelController.getSelectedModelsNames();
             if (selectedModels.size() == 0) {
-                addLog("Indices haven't been deleted as there is no selected models", Statuses.WARNING);
+                logController.addLog("Indices haven't been deleted as there is no selected models", Statuses.WARNING);
                 return;
             }
 
-            Model model = getModelByName(selectedModels.get(0).getValue());
+            Model model = modelController.getModelByName(selectedModels.get(0).getValue());
             assert model != null;
 
             List<Integer> indices = getIndicesFromRemoveInput();
 
             removePolygons(model, (ArrayList<Integer>) indices, true);
 
-            addLog("Polygons successfully deleted", Statuses.MESSAGE);
+            logController.addLog("Polygons successfully deleted", Statuses.MESSAGE);
 
             if (model.polygons.size() == 0) {
-                removeModel(model);
-                addLog("Model was removed as it hadn't any polygons", Statuses.WARNING);
+                modelController.removeModel(model);
+                logController.addLog("Model was removed as it hadn't any polygons", Statuses.WARNING);
             }
 
-            updateModels();
+            modelController.updateModels();
         } catch (Exception exception) {
-            addLog(exception.getMessage(), Statuses.ERROR);
+            logController.addLog(exception.getMessage(), Statuses.ERROR);
         }
     }
 
     @FXML
     private void onDelKeyClick(KeyEvent key) {
         if (key.getCode() == KeyCode.DELETE) {
-            removeActiveModels();
+            modelController.removeSelectedModels();
         }
     }
 

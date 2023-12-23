@@ -77,7 +77,7 @@ public class GraphicConveyor {
     ) {
         return Matrix4f.multiply(
                 translationMatrix4f(translationX,translationY,translationZ),
-                Matrix4f.multiply(rotateMatrix4f(angleX,angleY,angleZ), translationMatrix4f(scaleX,scaleY,scaleZ)));
+                Matrix4f.multiply(rotateMatrix4f(angleX,angleY,angleZ), scaleMatrix4f(scaleX,scaleY,scaleZ)));
     }
     // изменить значения, чтобы создать мировую матрицу
     // TODO: 23.12.2023 исправить этот вонючий костыль

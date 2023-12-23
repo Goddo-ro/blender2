@@ -9,4 +9,6 @@ module com.cgvsu {
     exports com.cgvsu;
     exports com.cgvsu.log;
     opens com.cgvsu.log to javafx.fxml;
+    exports com.cgvsu.controllers;
+    opens com.cgvsu.controllers to javafx.fxml;
 }
