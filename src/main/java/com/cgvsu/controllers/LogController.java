@@ -41,8 +41,6 @@ public class LogController {
             console.getChildren().add(label);
         }
 
-        console.setMinHeight(console.getChildren().size() * 30 - 12);
-        consolePane.setPrefHeight(console.getChildren().size() * 30 - 12);
         consoleScroll.setVmax(console.getChildren().size() * 30 - 12);
         consoleScroll.setVvalue(console.getChildren().size() * 30 - 12);
     }

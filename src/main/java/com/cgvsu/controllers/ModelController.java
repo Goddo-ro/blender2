@@ -134,6 +134,7 @@ public class ModelController {
     }
 
     void saveModel(Model model) {
+        // TODO: fix triangulated models saving
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Model (*.obj)", "*.obj"));
         fileChooser.setTitle("Save Model");

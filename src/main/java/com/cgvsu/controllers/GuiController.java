@@ -2,6 +2,7 @@ package com.cgvsu.controllers;
 
 
 import com.cgvsu.log.Statuses;
+import com.cgvsu.math.Vector3f;
 import com.cgvsu.model.Model;
 import com.cgvsu.objreader.ObjReader;
 
@@ -10,6 +11,7 @@ import com.cgvsu.render_engine.RenderEngine;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -22,7 +24,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
-import javax.vecmath.Vector3f;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,6 +43,12 @@ public class GuiController {
     private AnchorPane anchorPane;
 
     @FXML
+    private AnchorPane consoleSplit;
+
+    @FXML
+    private SplitPane mainSplit;
+
+    @FXML
     Canvas canvas;
 
     @FXML
@@ -49,9 +56,6 @@ public class GuiController {
 
     @FXML
     private BorderPane modelsManipulations;
-
-    @FXML
-    private BorderPane consoleContainer;
 
     @FXML
     private ScrollPane consoleScroll;
@@ -62,9 +66,6 @@ public class GuiController {
     private Button toggleMenu;
 
     @FXML
-    private Button toggleConsoleBtn;
-
-    @FXML
     private Button toggleManipulations;
 
     @FXML
@@ -72,6 +73,9 @@ public class GuiController {
 
     @FXML
     private Button deleteVerticesBtn;
+
+    @FXML
+    private Button toggleConsoleBtn;
 
     @FXML
     private TextField indicesText;
@@ -86,17 +90,14 @@ public class GuiController {
     private VBox console;
 
     private ModelController modelController;
+    private ConsoleController consoleController;
     public LogController logController;
 
     private boolean isMenuClosed = false;
-    private boolean isConsoleClosed = false;
     private boolean isManipulationsClosed = false;
 
     private final int OPENED_MENU_WIDTH = 350;
     private final int CLOSED_MENU_WIDTH = 20;
-
-    private final int OPENED_CONSOLE_HEIGHT = 350;
-    private final int CLOSED_CONSOLE_HEIGHT = 20;
 
     private Camera camera = new Camera(
             new Vector3f(0, 0, 100),
@@ -119,6 +120,7 @@ public class GuiController {
         timeline.setCycleCount(Animation.INDEFINITE);
 
         modelController = new ModelController(this, anchorPane, models);
+        consoleController = new ConsoleController(mainSplit, toggleConsoleBtn);
         logController = new LogController(console, consolePane, consoleScroll);
 
         onMouseToggleConsoleClick();
@@ -133,8 +135,8 @@ public class GuiController {
             camera.setAspectRatio((float) (width / height));
 
             toggleConsoleBtn.setPrefWidth(width);
+            console.setMinHeight(consoleSplit.getHeight() - consoleController.CLOSED_CONSOLE_POSITION - 5);
             consoleScroll.setVmax(console.getHeight());
-            modelsContainer.setPrefHeight(canvas.getHeight() - CLOSED_CONSOLE_HEIGHT + 1);
 
             if (consolePane.getHeight() != console.getHeight()) {
                 consolePane.setPrefHeight(console.getHeight());
@@ -149,6 +151,10 @@ public class GuiController {
                 RenderEngine.render(canvas.getGraphicsContext2D(), camera, model,
                         (int) width, (int) height, modelController.isModelActive(model));
             }
+
+            anchorPane.getScene().addPreLayoutPulseListener(() -> {
+                consoleController.windowResizing = true;
+            });
         });
 
         timeline.getKeyFrames().add(frame);
@@ -214,21 +220,7 @@ public class GuiController {
 
     @FXML
     private void onMouseToggleConsoleClick() {
-        if (isConsoleClosed) {
-            toggleConsoleBtn.setText("-");
-            consoleContainer.setMaxHeight(OPENED_CONSOLE_HEIGHT - 1);
-            modelsContainer.setPrefHeight(canvas.getHeight() - OPENED_CONSOLE_HEIGHT + 1);
-            modelsManipulations.setMinHeight(canvas.getHeight() - OPENED_CONSOLE_HEIGHT + 1);
-            consoleScroll.setOpacity(1);
-        } else {
-            toggleConsoleBtn.setText("+");
-            consoleContainer.setMaxHeight(CLOSED_CONSOLE_HEIGHT);
-            modelsContainer.setMinHeight(canvas.getHeight() - CLOSED_CONSOLE_HEIGHT + 1);
-            modelsManipulations.setMinHeight(canvas.getHeight() - OPENED_CONSOLE_HEIGHT + 1);
-            consoleScroll.setOpacity(0);
-        }
-
-        isConsoleClosed = !isConsoleClosed;
+        consoleController.toggleConsole();
     }
 
     @FXML

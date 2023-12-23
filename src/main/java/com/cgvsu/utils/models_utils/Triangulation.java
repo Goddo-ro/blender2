@@ -2,9 +2,12 @@ package com.cgvsu.utils.models_utils;
 
 import com.cgvsu.model.Model;
 import com.cgvsu.model.Polygon;
-import com.cgvsu.math.Vector3f;
 import com.cgvsu.model.TriPolyModel;
+
 import com.cgvsu.model.Triangle;
+
+import com.cgvsu.math.Vector3f;
+
 
 import java.util.*;
 
