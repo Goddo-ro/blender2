@@ -1,14 +1,14 @@
 package com.cgvsu;
 
-
 import com.cgvsu.log.Log;
 import com.cgvsu.log.Statuses;
 import com.cgvsu.model.Model;
 import com.cgvsu.objreader.ObjReader;
-
 import com.cgvsu.objwriter.ObjWriter;
 import com.cgvsu.render_engine.Camera;
 import com.cgvsu.render_engine.RenderEngine;
+import com.cgvsu.math.Vector3f;
+
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -28,7 +28,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
-import com.cgvsu.math.Vector3f;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;

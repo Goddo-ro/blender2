@@ -25,11 +25,8 @@ public class GraphicConveyor {
 
     public static Matrix4f lookAt(Vector3f eye, Vector3f target, Vector3f up) {
         Vector3f resultZ = Vector3f.deduct(target, eye);
-//        resultZ.sub(target, eye);
         Vector3f resultX = Vector3f.crossProduct(up, resultZ);
-//        resultX.cross(up, resultZ);
         Vector3f resultY = Vector3f.crossProduct(resultZ, resultX);
-//        resultY.cross(resultZ, resultX);
 
         Vector3f resultXN = resultX.normalize();
         Vector3f resultYN = resultY.normalize();
@@ -57,12 +54,6 @@ public class GraphicConveyor {
         result.setValue(2,2,(farPlane + nearPlane) / (farPlane - nearPlane));
         result.setValue(2,3,1.0F);
         result.setValue(3,2,2 * (nearPlane * farPlane) / (nearPlane - farPlane));
-
-//        result.m00 = tangentMinusOnDegree / aspectRatio;
-//        result.m11 = tangentMinusOnDegree;
-//        result.m22 = (farPlane + nearPlane) / (farPlane - nearPlane);
-//        result.m23 = 1.0F;
-//        result.m32 = 2 * (nearPlane * farPlane) / (nearPlane - farPlane);
         return result;
     }
 

@@ -37,13 +37,12 @@ public class Vector3f{
         throw new IllegalArgumentException("Index out of bounds");
     }
 
-    public Vector3f add(Vector3f other){
-        return new Vector3f(
-                this.x + other.x,
-                this.y + other.y,
-                this.z + other.z
-        );
+    public void add(Vector3f other){
+        this.x += other.x;
+        this.y += other.y;
+        this.z += other.z;
     }
+
     public static Vector3f add(Vector3f first, Vector3f second) {
         return new Vector3f(
                 first.x + second.x,
@@ -101,6 +100,7 @@ public class Vector3f{
                 this.z * normalization
         );
     }
+
     //Скалярное произведение векторов
     public float dot(Vector3f other){
         return this.x * other.x + this.y * other.y + this.z * other.z;
@@ -116,7 +116,7 @@ public class Vector3f{
 
     public static Vector3f crossProduct(Vector3f first, Vector3f second) {
         return new Vector3f(
-                first.x * second.z - first.z * second.y,
+                first.y * second.z - first.z * second.y,
                 first.z * second.x - first.x * second.z,
                 first.x * second.y - first.y * second.x
         );

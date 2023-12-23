@@ -1,7 +1,6 @@
 package com.cgvsu.utils;
 
 import com.cgvsu.math.Vector3f;
-//import com.cgvsu.math.VectorOperations;
 import com.cgvsu.model.Polygon;
 
 import java.util.ArrayList;
@@ -43,7 +42,6 @@ public class NormalUtils {
             }
         }
         for (int i = 0; i < count.length; i++) {
-            // по сути нахождение среднего арифметического в данном случае не особо нужно, так как это просто сокращает длинну вектора суммы, что так же осуществляется с помощью нормализации
             normalsVertex.add(i, normalSummaVertex[i].normalize());
         }
         return normalsVertex;
