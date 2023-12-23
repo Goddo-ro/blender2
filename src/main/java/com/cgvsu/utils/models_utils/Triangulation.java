@@ -4,13 +4,14 @@ import com.cgvsu.model.Model;
 import com.cgvsu.model.Polygon;
 import com.cgvsu.math.Vector3f;
 import com.cgvsu.model.TriPolyModel;
+import com.cgvsu.model.Triangle;
 
 import java.util.*;
 
 public class Triangulation {
 
 
-    public static TriPolyModel getNewTriangulatedModel(Model model) {
+    public static TriPolyModel getTriangulatedModel(Model model) {
         assert !model.polygons.isEmpty() : "Empty model";
         TriPolyModel triangulatedPolygonsModel = new TriPolyModel();
         triangulatedPolygonsModel.textureVertices = model.textureVertices;
@@ -28,7 +29,7 @@ public class Triangulation {
             for (List<Vector3f> triangle : triangulatedPolygons
             ) {
                 assert !triangle.isEmpty() : "Empty polygon";
-                Polygon triangulatedPolygon = new Polygon();
+                Triangle triangulatedPolygon = new Triangle();
                 ArrayList<Integer> polyVert = new ArrayList<>();
                 polyVert.add(model.vertices.indexOf(triangle.get(0)));
                 polyVert.add(model.vertices.indexOf(triangle.get(1)));
@@ -44,35 +45,35 @@ public class Triangulation {
         return triangulatedPolygonsModel;
     }
 
-    public static void triangulateModel(Model model) {
-        assert !model.polygons.isEmpty() : "Empty model";
-        HashMap<Polygon, ArrayList<Vector3f>> polyVertMap = new HashMap<>(getPolyVertMap(model));
-        model.polygons.clear();
-        for (Map.Entry<Polygon, ArrayList<Vector3f>> entry : polyVertMap.entrySet()
-        ) {
-            Polygon polygon = entry.getKey();
-            ArrayList<Vector3f> vertices = entry.getValue();
-            List<List<Vector3f>> triangulatedPolygons;
-            triangulatedPolygons = triangulate(vertices);
-
-            for (List<Vector3f> triangle : triangulatedPolygons
-            ) {
-                assert !triangle.isEmpty() : "Empty polygon";
-                Polygon triangulatedPolygon = new Polygon();
-                ArrayList<Integer> polyVert = new ArrayList<>();
-                polyVert.add(model.vertices.indexOf(triangle.get(0)));
-                polyVert.add(model.vertices.indexOf(triangle.get(1)));
-                polyVert.add(model.vertices.indexOf(triangle.get(2)));
-                triangulatedPolygon.setVertexIndices(polyVert);
-                triangulatedPolygon.setNormalIndices(entry.getKey().getNormalIndices());
-                triangulatedPolygon.setTextureVertexIndices(entry.getKey().getTextureVertexIndices());
-                model.polygons.add(triangulatedPolygon);
-            }
-
-
-        }
-
-    }
+//    public static void triangulateModel(Model model) {
+//        assert !model.polygons.isEmpty() : "Empty model";
+//        HashMap<Polygon, ArrayList<Vector3f>> polyVertMap = new HashMap<>(getPolyVertMap(model));
+//        model.polygons.clear();
+//        for (Map.Entry<Polygon, ArrayList<Vector3f>> entry : polyVertMap.entrySet()
+//        ) {
+//            Polygon polygon = entry.getKey();
+//            ArrayList<Vector3f> vertices = entry.getValue();
+//            List<List<Vector3f>> triangulatedPolygons;
+//            triangulatedPolygons = triangulate(vertices);
+//
+//            for (List<Vector3f> triangle : triangulatedPolygons
+//            ) {
+//                assert !triangle.isEmpty() : "Empty polygon";
+//                Polygon triangulatedPolygon = new Polygon();
+//                ArrayList<Integer> polyVert = new ArrayList<>();
+//                polyVert.add(model.vertices.indexOf(triangle.get(0)));
+//                polyVert.add(model.vertices.indexOf(triangle.get(1)));
+//                polyVert.add(model.vertices.indexOf(triangle.get(2)));
+//                triangulatedPolygon.setVertexIndices(polyVert);
+//                triangulatedPolygon.setNormalIndices(entry.getKey().getNormalIndices());
+//                triangulatedPolygon.setTextureVertexIndices(entry.getKey().getTextureVertexIndices());
+//                model.polygons.add(triangulatedPolygon);
+//            }
+//
+//
+//        }
+//
+//    }
 
     public static List<List<Vector3f>> triangulate(List<Vector3f> vertList) {
         List<List<Vector3f>> triangulatedPolygons = new ArrayList<>();
