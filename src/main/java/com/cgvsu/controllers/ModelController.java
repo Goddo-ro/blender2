@@ -2,6 +2,7 @@ package com.cgvsu.controllers;
 
 import com.cgvsu.log.Statuses;
 import com.cgvsu.model.Model;
+import com.cgvsu.objreader.ObjReader;
 import com.cgvsu.objwriter.ObjWriter;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -12,9 +13,17 @@ import javafx.scene.layout.TilePane;
 import javafx.stage.FileChooser;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static com.cgvsu.utils.StringUtils.generateUniqueName;
+import static com.cgvsu.utils.models_utils.ModelConverter.triPolyModelToModel;
+import static com.cgvsu.utils.models_utils.PolygonRemover.removePolygons;
+import static com.cgvsu.utils.models_utils.Triangulation.getTriangulatedModel;
+import static com.cgvsu.utils.models_utils.VerticesRemover.deleteVertexes;
 
 public class ModelController {
     private final List<Model> modelsList = new ArrayList<>();
@@ -133,21 +142,11 @@ public class ModelController {
         return false;
     }
 
-    void saveModel(Model model) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Model (*.obj)", "*.obj"));
-        fileChooser.setTitle("Save Model");
-
-        fileChooser.setInitialFileName(model.getName());
-
-        File selectedFile = fileChooser.showSaveDialog(root.canvas.getScene().getWindow());
-
-        if (selectedFile != null) {
-            try {
-                ObjWriter.write(model, selectedFile.getAbsolutePath());
-                root.logController.addLog("Model " + model.getName() + " was successfully saved", Statuses.MESSAGE);
-            } catch (Exception exception) {
-                root.logController.addLog(exception.getMessage(), Statuses.ERROR);
+    void replaceModel(String modelName, Model newModel) {
+        for (int i = 0; i < modelsList.size(); i++) {
+            if (modelsList.get(i).getName().equals(modelName)) {
+                modelsList.set(i, newModel);
+                return;
             }
         }
     }
@@ -169,13 +168,132 @@ public class ModelController {
         root.logController.addLog("Selected models successfully removed", Statuses.MESSAGE);
     }
 
-
     void expandTreeView(TreeItem<?> item) {
         if (item != null && !item.isLeaf()) {
             item.setExpanded(true);
             for (TreeItem<?> child : item.getChildren()) {
                 expandTreeView(child);
             }
+        }
+    }
+
+    void loadModel() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Model (*.obj)", "*.obj"));
+        fileChooser.setTitle("Load Model");
+
+        File file = fileChooser.showOpenDialog(root.canvas.getScene().getWindow());
+        if (file == null) {
+            return;
+        }
+
+        Path fileName = Path.of(file.getAbsolutePath());
+
+        try {
+            String fileContent = Files.readString(fileName);
+            Model mesh = ObjReader.read(fileContent);
+            mesh.setName(generateUniqueName(file.getName(), getModelsName()));
+            getModelsList().add(mesh);
+            updateModels();
+            root.logController.addLog("Model " + mesh.getName() + " was successfully loaded", Statuses.MESSAGE);
+        } catch (Exception exception) {
+            root.logController.addLog(exception.getMessage(), Statuses.ERROR);
+        }
+    }
+
+    void saveModel(Model model) {
+        // TODO: fix triangulated models saving
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Model (*.obj)", "*.obj"));
+        fileChooser.setTitle("Save Model");
+
+        fileChooser.setInitialFileName(model.getName());
+
+        File selectedFile = fileChooser.showSaveDialog(root.canvas.getScene().getWindow());
+
+        if (selectedFile != null) {
+            try {
+                ObjWriter.write(model, selectedFile.getAbsolutePath());
+                root.logController.addLog("Model " + model.getName() + " was successfully saved", Statuses.MESSAGE);
+            } catch (Exception exception) {
+                root.logController.addLog(exception.getMessage(), Statuses.ERROR);
+            }
+        }
+    }
+
+    void triangulateModels() {
+        try {
+            List<Model> selectedModels = root.modelController.getSelectedModels();
+            if (selectedModels.size() == 0) {
+                root.logController.addLog("Models haven't been triangulated as there is no selected models", Statuses.WARNING);
+                return;
+            }
+
+            for (Model model : selectedModels) {
+                Model triangulatedModel = triPolyModelToModel(getTriangulatedModel(model));
+                System.out.println(triangulatedModel.getName());
+                replaceModel(model.getName(), triangulatedModel);
+                root.logController.addLog("Model " + model.getName() + " was successfully triangulated", Statuses.MESSAGE);
+            }
+        } catch (Exception exception) {
+            root.logController.addLog(exception.getMessage(), Statuses.ERROR);
+        }
+    }
+
+    void deleteVertices() {
+        // TODO: not change vertices if some of them are greater than max index
+        try {
+            List<TreeItem<String>> selectedModels = root.modelController.getSelectedModelsNames();
+            if (selectedModels.size() == 0) {
+                root.logController.addLog("Polygons haven't been deleted as there is no selected models", Statuses.WARNING);
+                return;
+            }
+
+            Model model = root.modelController.getModelByName(selectedModels.get(0).getValue());
+            assert model != null;
+
+            List<Integer> indices = root.getIndicesFromRemoveInput();
+
+            deleteVertexes(model, indices);
+
+            root.logController.addLog("Vertices successfully deleted", Statuses.MESSAGE);
+
+            if (model.polygons.size() == 0) {
+                root.modelController.removeModel(model);
+                root.logController.addLog("Model was removed as it hadn't any polygons", Statuses.WARNING);
+            }
+
+            root.modelController.updateModels();
+        } catch (Exception exception) {
+            root.logController.addLog(exception.getMessage(), Statuses.ERROR);
+        }
+    }
+
+    void deletePolygons() {
+        try {
+            List<TreeItem<String>> selectedModels = root.modelController.getSelectedModelsNames();
+            if (selectedModels.size() == 0) {
+                root.logController.addLog("Indices haven't been deleted as there is no selected models", Statuses.WARNING);
+                return;
+            }
+
+            Model model = root.modelController.getModelByName(selectedModels.get(0).getValue());
+            assert model != null;
+
+            List<Integer> indices = root.getIndicesFromRemoveInput();
+
+            removePolygons(model, (ArrayList<Integer>) indices, true);
+
+            root.logController.addLog("Polygons successfully deleted", Statuses.MESSAGE);
+
+            if (model.polygons.size() == 0) {
+                root.modelController.removeModel(model);
+                root.logController.addLog("Model was removed as it hadn't any polygons", Statuses.WARNING);
+            }
+
+            root.modelController.updateModels();
+        } catch (Exception exception) {
+            root.logController.addLog(exception.getMessage(), Statuses.ERROR);
         }
     }
 }

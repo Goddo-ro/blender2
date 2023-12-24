@@ -1,11 +1,8 @@
 package com.cgvsu.controllers;
 
 
-import com.cgvsu.log.Statuses;
 import com.cgvsu.math.Vector3f;
 import com.cgvsu.model.Model;
-import com.cgvsu.objreader.ObjReader;
-
 import com.cgvsu.render_engine.Camera;
 import com.cgvsu.render_engine.RenderEngine;
 import javafx.animation.Animation;
@@ -20,19 +17,13 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import static com.cgvsu.utils.models_utils.Triangulation.triangulateModel;
 import static com.cgvsu.utils.ListUtils.stringToNumberList;
-import static com.cgvsu.utils.models_utils.PolygonRemover.removePolygons;
-import static com.cgvsu.utils.models_utils.VerticesRemover.deleteVertexes;
-import static com.cgvsu.utils.StringUtils.generateUniqueName;
 
 public class GuiController {
 
@@ -40,6 +31,12 @@ public class GuiController {
 
     @FXML
     private AnchorPane anchorPane;
+
+    @FXML
+    private AnchorPane consoleSplit;
+
+    @FXML
+    private SplitPane mainSplit;
 
     @FXML
     Canvas canvas;
@@ -51,18 +48,12 @@ public class GuiController {
     private BorderPane modelsManipulations;
 
     @FXML
-    private BorderPane consoleContainer;
-
-    @FXML
     private ScrollPane consoleScroll;
 
     @FXML ScrollPane manipulationsScroll;
 
     @FXML
     private Button toggleMenu;
-
-    @FXML
-    private Button toggleConsoleBtn;
 
     @FXML
     private Button toggleManipulations;
@@ -72,6 +63,9 @@ public class GuiController {
 
     @FXML
     private Button deleteVerticesBtn;
+
+    @FXML
+    private Button toggleConsoleBtn;
 
     @FXML
     private TextField indicesText;
@@ -85,18 +79,15 @@ public class GuiController {
     @FXML
     private VBox console;
 
-    private ModelController modelController;
-    public LogController logController;
+    ModelController modelController;
+    ConsoleController consoleController;
+    LogController logController;
 
     private boolean isMenuClosed = false;
-    private boolean isConsoleClosed = false;
     private boolean isManipulationsClosed = false;
 
     private final int OPENED_MENU_WIDTH = 350;
     private final int CLOSED_MENU_WIDTH = 20;
-
-    private final int OPENED_CONSOLE_HEIGHT = 350;
-    private final int CLOSED_CONSOLE_HEIGHT = 20;
 
     private Camera camera = new Camera(
             new Vector3f(0, 0, 100),
@@ -105,7 +96,7 @@ public class GuiController {
 
     private Timeline timeline;
 
-    private List<Integer> getIndicesFromRemoveInput() {
+    List<Integer> getIndicesFromRemoveInput() {
         List<String> elements = new ArrayList<>(Arrays.asList(indicesText.getText().split(" ")));
         return stringToNumberList(elements);
     }
@@ -119,6 +110,7 @@ public class GuiController {
         timeline.setCycleCount(Animation.INDEFINITE);
 
         modelController = new ModelController(this, anchorPane, models);
+        consoleController = new ConsoleController(mainSplit, toggleConsoleBtn);
         logController = new LogController(console, consolePane, consoleScroll);
 
         onMouseToggleConsoleClick();
@@ -133,8 +125,8 @@ public class GuiController {
             camera.setAspectRatio((float) (width / height));
 
             toggleConsoleBtn.setPrefWidth(width);
+            console.setMinHeight(consoleSplit.getHeight() - consoleController.CLOSED_CONSOLE_POSITION - 5);
             consoleScroll.setVmax(console.getHeight());
-            modelsContainer.setPrefHeight(canvas.getHeight() - CLOSED_CONSOLE_HEIGHT + 1);
 
             if (consolePane.getHeight() != console.getHeight()) {
                 consolePane.setPrefHeight(console.getHeight());
@@ -149,6 +141,10 @@ public class GuiController {
                 RenderEngine.render(canvas.getGraphicsContext2D(), camera, model,
                         (int) width, (int) height, modelController.isModelActive(model));
             }
+
+            anchorPane.getScene().addPreLayoutPulseListener(() -> {
+                consoleController.windowResizing = true;
+            });
         });
 
         timeline.getKeyFrames().add(frame);
@@ -157,27 +153,7 @@ public class GuiController {
 
     @FXML
     private void onOpenModelMenuItemClick() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Model (*.obj)", "*.obj"));
-        fileChooser.setTitle("Load Model");
-
-        File file = fileChooser.showOpenDialog(canvas.getScene().getWindow());
-        if (file == null) {
-            return;
-        }
-
-        Path fileName = Path.of(file.getAbsolutePath());
-
-        try {
-            String fileContent = Files.readString(fileName);
-            Model mesh = ObjReader.read(fileContent);
-            mesh.setName(generateUniqueName(file.getName(), modelController.getModelsName()));
-            modelController.getModelsList().add(mesh);
-            modelController.updateModels();
-            logController.addLog("Model " + mesh.getName() + " was successfully loaded", Statuses.MESSAGE);
-        } catch (Exception exception) {
-            logController.addLog(exception.getMessage(), Statuses.ERROR);
-        }
+        modelController.loadModel();
     }
 
     @FXML
@@ -214,98 +190,22 @@ public class GuiController {
 
     @FXML
     private void onMouseToggleConsoleClick() {
-        if (isConsoleClosed) {
-            toggleConsoleBtn.setText("-");
-            consoleContainer.setMaxHeight(OPENED_CONSOLE_HEIGHT - 1);
-            modelsContainer.setPrefHeight(canvas.getHeight() - OPENED_CONSOLE_HEIGHT + 1);
-            modelsManipulations.setMinHeight(canvas.getHeight() - OPENED_CONSOLE_HEIGHT + 1);
-            consoleScroll.setOpacity(1);
-        } else {
-            toggleConsoleBtn.setText("+");
-            consoleContainer.setMaxHeight(CLOSED_CONSOLE_HEIGHT);
-            modelsContainer.setMinHeight(canvas.getHeight() - CLOSED_CONSOLE_HEIGHT + 1);
-            modelsManipulations.setMinHeight(canvas.getHeight() - OPENED_CONSOLE_HEIGHT + 1);
-            consoleScroll.setOpacity(0);
-        }
-
-        isConsoleClosed = !isConsoleClosed;
+        consoleController.toggleConsole();
     }
 
     @FXML
     private void onMouseTriangulateClick() {
-        try {
-            List<Model> selectedModels = modelController.getSelectedModels();
-            if (selectedModels.size() == 0) {
-                logController.addLog("Models haven't been triangulated as there is no selected models", Statuses.WARNING);
-                return;
-            }
-
-            for (Model model : selectedModels) {
-                triangulateModel(model);
-                logController.addLog("Model " + model.getName() + " was successfully triangulated", Statuses.MESSAGE);
-            }
-        } catch (Exception exception) {
-            logController.addLog(exception.getMessage(), Statuses.ERROR);
-        }
+        modelController.triangulateModels();
     }
 
     @FXML
     private void onMouseDelVerticesClick() {
-        // TODO: not change vertices if some of them are greater than max index
-        try {
-            List<TreeItem<String>> selectedModels = modelController.getSelectedModelsNames();
-            if (selectedModels.size() == 0) {
-                logController.addLog("Polygons haven't been deleted as there is no selected models", Statuses.WARNING);
-                return;
-            }
-
-            Model model = modelController.getModelByName(selectedModels.get(0).getValue());
-            assert model != null;
-
-            List<Integer> indices = getIndicesFromRemoveInput();
-
-            deleteVertexes(model, indices);
-
-            logController.addLog("Vertices successfully deleted", Statuses.MESSAGE);
-
-            if (model.polygons.size() == 0) {
-                modelController.removeModel(model);
-                logController.addLog("Model was removed as it hadn't any polygons", Statuses.WARNING);
-            }
-
-            modelController.updateModels();
-        } catch (Exception exception) {
-            logController.addLog(exception.getMessage(), Statuses.ERROR);
-        }
+        modelController.deleteVertices();
     }
 
     @FXML
     private void onMouseDelPolygonsClick() {
-        try {
-            List<TreeItem<String>> selectedModels = modelController.getSelectedModelsNames();
-            if (selectedModels.size() == 0) {
-                logController.addLog("Indices haven't been deleted as there is no selected models", Statuses.WARNING);
-                return;
-            }
-
-            Model model = modelController.getModelByName(selectedModels.get(0).getValue());
-            assert model != null;
-
-            List<Integer> indices = getIndicesFromRemoveInput();
-
-            removePolygons(model, (ArrayList<Integer>) indices, true);
-
-            logController.addLog("Polygons successfully deleted", Statuses.MESSAGE);
-
-            if (model.polygons.size() == 0) {
-                modelController.removeModel(model);
-                logController.addLog("Model was removed as it hadn't any polygons", Statuses.WARNING);
-            }
-
-            modelController.updateModels();
-        } catch (Exception exception) {
-            logController.addLog(exception.getMessage(), Statuses.ERROR);
-        }
+        modelController.deletePolygons();
     }
 
     @FXML
