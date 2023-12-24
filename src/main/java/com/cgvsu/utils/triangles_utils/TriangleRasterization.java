@@ -3,6 +3,7 @@ package com.cgvsu.utils.triangles_utils;
 import com.cgvsu.math.Vector2f;
 import com.cgvsu.math.Vector3f;
 import com.cgvsu.model.Triangle;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.paint.Color;
 
@@ -33,38 +34,37 @@ public class TriangleRasterization {
 
     /**
      * Draws the specified triangle.
-     * @param pw The pixel writer.
+     *
+     * @param gc       The pixel writer.
      * @param triangle The triangle to draw.
      */
-    public static void drawTriangle(PixelWriter pw, ArrayList<Vector2f> triangle, Color color1, Color color2, Color color3) {
-        drawTriangle(pw, triangle.get(0), triangle.get(1), triangle.get(2), color1, color2, color3);
-    }
+//    public static void drawTriangle(GraphicsContext gc, ArrayList<Vector2f> triangle, Color color1, Color color2, Color color3) {
+//        drawTriangle(gc, triangle.get(0), triangle.get(1), triangle.get(2), color1);
+//    }
 
-    public static void drawTriangle(PixelWriter pw, ArrayList<Vector2f> triangle, Color color1) {
-        drawTriangle(pw, triangle.get(0), triangle.get(1), triangle.get(2), color1, color1, color1);
+    public static void drawTriangle(GraphicsContext gc, ArrayList<Vector2f> triangle, Color color1) {
+        drawTriangle(gc, triangle.get(0), triangle.get(1), triangle.get(2), color1);
     }
 
     /**
      * Draws the specified triangle. The order of the vertices is irrelevant.
-     * @param pw The pixel writer.
+     *
+     * @param gc The pixel writer.
      * @param v1 The first vertex.
      * @param v2 The second vertex.
      * @param v3 The third vertex.
      * @param c1 The first color.
-     * @param c2 The second color.
-     * @param c3 The third color.
      */
     public static void drawTriangle(
-            final PixelWriter pw,
+            final GraphicsContext gc,
             final Vector2f v1,
             final Vector2f v2,
             final Vector2f v3,
-            final Color c1,
-            final Color c2,
-            final Color c3
+            final Color c1
+
     ) {
         // Sort vertices by y.
-        final var verts = new Vector2f[]{v1, v2, v3};
+        final Vector2f[] verts = new Vector2f[]{v1, v2, v3};
         Arrays.sort(verts, COMPARATOR);
         final int x1 = (int) verts[0].getX();
         final int x2 = (int) verts[1].getX();
@@ -75,22 +75,20 @@ public class TriangleRasterization {
 
         // Double the area of the triangle. Used to calculate the barycentric coordinates later.
         final float area = Math.abs(v1.to(v2).crossMagnitude(v1.to(v3)));
-        drawTopTriangle(pw, x1, y1, x2, y2, x3, y3, v1, c1, v2, c2, v3, c3, area);
-        drawBottomTriangle(pw, x1, y1, x2, y2, x3, y3, v1, c1, v2, c2, v3, c3, area);
+        drawTopTriangle(gc, c1, x1, y1, x2, y2, x3, y3);
+        drawBottomTriangle(gc, c1, x1, y1, x2, y2, x3, y3);
     }
 
     /**
      * Draws the top triangle as part of the bigger triangle.
      */
     private static void drawTopTriangle(
-            final PixelWriter pw,
+            final GraphicsContext gc,
+            final Color c1,
             final int x1, final int y1,
             final int x2, final int y2,
-            final int x3, final int y3,
-            final Vector2f v1, final Color c1,
-            final Vector2f v2, final Color c2,
-            final Vector2f v3, final Color c3,
-            final float area
+            final int x3, final int y3
+//
     ) {
         final int x2x1 = x2 - x1;
         final int x3x1 = x3 - x1;
@@ -107,8 +105,10 @@ public class TriangleRasterization {
                 r = tmp;
             }
             for (int x = l; x <= r; x++) {
-                final int colorBits = interpolateColor(x, y, v1, c1, v2, c2, v3, c3, area);
-                pw.setArgb(x, y, colorBits);
+//                final int colorBits = interpolateColor(x, y, v1, c1, v2, c2, v3, c3, area);
+                gc.setStroke(c1);
+                gc.strokeRect(x, y, 1, 1);
+
             }
         }
     }
@@ -117,14 +117,11 @@ public class TriangleRasterization {
      * Draws the bottom triangle as part of the bigger triangle.
      */
     private static void drawBottomTriangle(
-            final PixelWriter pw,
+            final GraphicsContext gc,
+            final Color c1,
             final int x1, final int y1,
             final int x2, final int y2,
-            final int x3, final int y3,
-            final Vector2f v1, final Color c1,
-            final Vector2f v2, final Color c2,
-            final Vector2f v3, final Color c3,
-            final float area
+            final int x3, final int y3
     ) {
         final int x3x2 = x3 - x2;
         final int x3x1 = x3 - x1;
@@ -142,44 +139,47 @@ public class TriangleRasterization {
                 r = tmp;
             }
             for (int x = l; x <= r; x++) {
-                final int colorBits = interpolateColor(x, y, v1, c1, v2, c2, v3, c3, area);
-                pw.setArgb(x, y, colorBits);
+//                final int colorBits = interpolateColor(x, y, v1, c1, v2, c2, v3, c3, area);
+                gc.setStroke(c1);
+                gc.strokeRect(x, y, 1, 1);
             }
         }
     }
 
-    /**
-     * Interpolates the color for the given coordinate.
-     * @return The interpolated color bits in the ARGB format.
-     */
-    private static int interpolateColor(
-            final int x, final int y,
-            final Vector2f v1, final Color c1,
-            final Vector2f v2, final Color c2,
-            final Vector2f v3, final Color c3,
-            final float area
-    ) {
-        p.set(x, y);
-        final float w1 = Math.abs(v2.to(p).crossMagnitude(v2.to(v3))) / area;
-        final float w2 = Math.abs(v1.to(p).crossMagnitude(v1.to(v3))) / area;
-        final float w3 = Math.abs(v1.to(p).crossMagnitude(v1.to(v2))) / area;
-
-        final float red = clamp((float) (w1 * c1.getRed() + w2 * c2.getRed() + w3 * c3.getRed()));
-        final float green = clamp((float) (w1 * c1.getGreen() + w2 * c2.getGreen() + w3 * c3.getGreen()));
-        final float blue = clamp((float) (w1 * c1.getBlue() + w2 * c2.getBlue() + w3 * c3.getBlue()));
-
-        color.set(red, green, blue);
-        return color.toArgb();
-    }
-
-    /**
-     * Clamps the given float value between 0 and 1.
-     * @param v The value to clamp.
-     * @return The clamped value.
-     */
-    private static float clamp(float v) {
-        if (v < (float) 0.0) return (float) 0.0;
-        if (v > (float) 1.0) return (float) 1.0;
-        return v;
-    }
+//    /**
+//     * Interpolates the color for the given coordinate.
+//     *
+//     * @return The interpolated color bits in the ARGB format.
+//     */
+//    private static int interpolateColor(
+//            final int x, final int y,
+//            final Vector2f v1, final Color c1,
+//            final Vector2f v2, final Color c2,
+//            final Vector2f v3, final Color c3,
+//            final float area
+//    ) {
+//        p.set(x, y);
+//        final float w1 = Math.abs(v2.to(p).crossMagnitude(v2.to(v3))) / area;
+//        final float w2 = Math.abs(v1.to(p).crossMagnitude(v1.to(v3))) / area;
+//        final float w3 = Math.abs(v1.to(p).crossMagnitude(v1.to(v2))) / area;
+//
+//        final float red = clamp((float) (w1 * c1.getRed() + w2 * c2.getRed() + w3 * c3.getRed()));
+//        final float green = clamp((float) (w1 * c1.getGreen() + w2 * c2.getGreen() + w3 * c3.getGreen()));
+//        final float blue = clamp((float) (w1 * c1.getBlue() + w2 * c2.getBlue() + w3 * c3.getBlue()));
+//
+//        color.set(red, green, blue);
+//        return color.toArgb();
+//    }
+//
+//    /**
+//     * Clamps the given float value between 0 and 1.
+//     *
+//     * @param v The value to clamp.
+//     * @return The clamped value.
+//     */
+//    private static float clamp(float v) {
+//        if (v < (float) 0.0) return (float) 0.0;
+//        if (v > (float) 1.0) return (float) 1.0;
+//        return v;
+//    }
 }
