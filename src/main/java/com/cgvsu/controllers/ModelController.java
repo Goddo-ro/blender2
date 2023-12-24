@@ -193,6 +193,7 @@ public class ModelController {
             String fileContent = Files.readString(fileName);
             Model mesh = ObjReader.read(fileContent);
             mesh.setName(generateUniqueName(file.getName(), getModelsName()));
+            mesh.triangulatedCopy = getTriangulatedModel(mesh);
             getModelsList().add(mesh);
             updateModels();
             root.logController.addLog("Model " + mesh.getName() + " was successfully loaded", Statuses.MESSAGE);

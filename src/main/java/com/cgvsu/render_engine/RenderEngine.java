@@ -2,6 +2,7 @@ package com.cgvsu.render_engine;
 
 import java.util.ArrayList;
 
+import com.cgvsu.utils.models_utils.ModelRasterizer;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -24,8 +25,10 @@ public class RenderEngine {
             final Model mesh,
             final int width,
             final int height,
-            final boolean isActive)
-    {
+            final boolean isActive
+    ) {
+        ModelRasterizer.rasterizeModel(graphicsContext.getPixelWriter(), mesh.triangulatedCopy, width,height,Color.GRAY);
+
         Matrix4f modelMatrix = rotateScaleTranslate();
         Matrix4f viewMatrix = camera.getViewMatrix();
         Matrix4f projectionMatrix = camera.getProjectionMatrix();
