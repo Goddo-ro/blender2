@@ -10,9 +10,6 @@ import com.cgvsu.model.Model;
 import com.cgvsu.math.Vector3f;
 import com.cgvsu.math.matrix.Matrix4f;
 
-//import javax.vecmath.Matrix4f;
-//import javax.vecmath.Vector3f;
-
 import javax.vecmath.Point2f;
 
 import static com.cgvsu.render_engine.GraphicConveyor.*;
