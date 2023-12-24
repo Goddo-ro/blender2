@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.cgvsu.math.Vector3f;
+
 class ObjReaderTest {
 
     @Test

@@ -13,6 +13,16 @@ public class Vector4f {
         this.w = w;
     }
 
+    public Vector4f(float[] points) {
+        if (points.length != 4) {
+            throw new IllegalArgumentException("Vector should have 4 points");
+        }
+        this.x = points[0];
+        this.y = points[1];
+        this.z = points[2];
+        this.w = points[3];
+    }
+
     public Vector4f() {
         this.x = 0;
         this.y = 0;
@@ -102,4 +112,14 @@ public class Vector4f {
         return this.x * other.x + this.y * other.y + this.z * other.z + this.w * other.w;
     }
 
+    public boolean equals(Vector4f vector4f) {
+        return Math.abs(this.x - vector4f.x) <= 10e-6 &&
+                Math.abs(this.y - vector4f.y) <= 10e-6 &&
+                Math.abs(this.z - vector4f.z) <= 10e-6 &&
+                Math.abs(this.w - vector4f.w) <= 10e-6;
+    }
+
+    public String toString() {
+        return "Vector4f: x = " + this.x + ", y = " + this.y + ", z = " + this.z + ", w = " + this.w;
+    }
 }

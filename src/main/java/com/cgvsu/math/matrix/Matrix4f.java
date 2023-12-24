@@ -38,6 +38,9 @@ public class Matrix4f{
 
     //Сложение матриц
     public Matrix4f add(Matrix4f other){
+        if (other == null) {
+            throw new NullPointerException("Matrix can't be null");
+        }
         float [][] result = new float[4][4];
         for (int i = 0; i < 4; i++){
             for (int j = 0; j < 4; j++){
@@ -49,6 +52,9 @@ public class Matrix4f{
 
     //Вычитание матриц
     public Matrix4f deduct(Matrix4f other){
+        if (other == null) {
+            throw new NullPointerException("Matrix can't be null");
+        }
         float [][] result = new float[4][4];
         for (int i = 0; i < 4; i++){
             for (int j = 0; j < 4; j++){
@@ -63,17 +69,37 @@ public class Matrix4f{
         if (vector == null) {
             throw new NullPointerException("Vector can't be null");
         }
-        float [] result = new float[4];
+        float[] result = new float[4];
         for (int i = 0; i < 4; i++){
             result[i] = 0;
             for (int j = 0; j < 4; j++){
                 result[i] += this.matrix[i][j] * vector.get(j);
             }
         }
-        return new Vector4f(result[0], result[1], result[2], result[3]);
+        return new Vector4f(result);
+    }
+
+    public static Vector4f multiply(Matrix4f matrix4f, Vector4f vector4f) {
+        if (vector4f == null) {
+            throw new NullPointerException("Vector can't be null");
+        }
+        if (matrix4f == null) {
+            throw new NullPointerException("Matrix can't be null");
+        }
+        float[] result = new float[4];
+        for (int i = 0; i < 4; i++) {
+            result[i] = 0;
+            for (int j = 0; j < 4; j++) {
+                result[i] += matrix4f.matrix[i][j] * vector4f.get(j);
+            }
+        }
+        return new Vector4f(result);
     }
     //Умножение на матрицу
     public Matrix4f multiply(Matrix4f other) {
+        if (other == null) {
+            throw new NullPointerException("Matrix can't be null");
+        }
         float [][] result = new float[4][4];
         for (int i = 0; i < 4; i++){
             for (int j = 0; j < 4; j++){
@@ -87,12 +113,15 @@ public class Matrix4f{
     }
 
     public static Matrix4f multiply(Matrix4f first, Matrix4f second) {
+        if (first == null || second == null) {
+            throw new NullPointerException("Matrix can't be null");
+        }
         float[][] result = new float[4][4];
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 result[i][j] = 0;
                 for (int k = 0; k < 4; k++) {
-                    result[i][j] += first.matrix[i][j] * second.matrix[k][j];
+                    result[i][j] += first.matrix[i][k] * second.matrix[k][j];
                 }
             }
         }
@@ -211,5 +240,18 @@ public class Matrix4f{
             }
         }
         return new Matrix4f(minor);
+    }
+
+    public boolean equals(Matrix4f matrix4f) {
+        int length = this.matrix.length;
+
+        for (int i = 0; i < length; i++) {
+            for (int j = 0; j < length; j++) {
+                if (Math.abs(this.matrix[i][j] - matrix4f.matrix[i][j]) > 10e-6) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

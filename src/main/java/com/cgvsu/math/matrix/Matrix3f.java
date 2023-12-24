@@ -33,6 +33,9 @@ public class Matrix3f{
 
     //Сложение матриц
     public Matrix3f add(Matrix3f other){
+        if (other == null) {
+            throw new NullPointerException("Matrix can't be null");
+        }
         float [][] result = new float[3][3];
         for (int i = 0; i < 3; i++){
             for (int j = 0; j < 3; j++){
@@ -43,6 +46,9 @@ public class Matrix3f{
     }
     //Вычитание матриц
     public Matrix3f deduct(Matrix3f other){
+        if (other == null) {
+            throw new NullPointerException("Matrix can't be null");
+        }
         float [][] result = new float[3][3];
         for (int i = 0; i < 3; i++){
             for (int j = 0; j < 3; j++){
@@ -64,17 +70,54 @@ public class Matrix3f{
                 result[i] += this.matrix[i][j] * vector.get(j);
             }
         }
-        return new Vector3f(result[0], result[1], result[2]);
+        return new Vector3f(result);
+    }
+
+    public static Vector3f multiply(Matrix3f matrix3f, Vector3f vector3f) {
+        if (vector3f == null) {
+            throw new NullPointerException("Vector can't be null");
+        }
+        if (matrix3f == null) {
+            throw new NullPointerException("Matrix can't be null");
+        }
+
+        float [] result = new float[3];
+        for (int i = 0; i < 3; i++){
+            result[i] = 0;
+            for (int j = 0; j < 3; j++){
+                result[i] += matrix3f.matrix[i][j] * vector3f.get(j);
+            }
+        }
+        return new Vector3f(result);
     }
 
     //Умножение на матрицу
     public Matrix3f multiply(Matrix3f other) {
-        float [][] result = new float[3][3];
+        if (other == null) {
+            throw new NullPointerException("Matrix can't be null");
+        }
+        float[][] result = new float[3][3];
         for (int i = 0; i < 3; i++){
             for (int j = 0; j < 3; j++){
                 result[i][j] = 0;
                 for (int k = 0; k < 3; k++){
                     result[i][j] += this.matrix[i][k] * other.matrix[k][j];
+                }
+            }
+        }
+        return new Matrix3f(result);
+    }
+
+    public static Matrix3f multiply(Matrix3f first, Matrix3f second) {
+        if (first == null || second == null) {
+            throw new NullPointerException("Matrix can't be null");
+        }
+        float[][] result = new float[3][3];
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                result[i][j] = 0;
+                for (int k = 0; k < 3; k++) {
+                    result[i][j] += first.matrix[i][k] * second.matrix[k][j];
                 }
             }
         }
@@ -157,4 +200,16 @@ public class Matrix3f{
         return new Matrix3f(minor);
     }
 
+    public boolean equals(Matrix3f matrix3f) {
+        int length = this.matrix.length;
+
+        for (int i = 0; i < length; i++) {
+            for (int j = 0; j < length; j++) {
+                if(Math.abs(this.matrix[i][j] - matrix3f.matrix[i][j]) > 10e-6) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }

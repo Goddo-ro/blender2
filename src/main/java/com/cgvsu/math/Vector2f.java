@@ -15,6 +15,14 @@ public class Vector2f{
         this.y = y;
     }
 
+    public Vector2f(float[] points) {
+        if (points.length != 2) {
+            throw new IllegalArgumentException("Vector should have 2 points");
+        }
+        this.x = points[0];
+        this.y = points[1];
+    }
+
     public Vector2f () {
         this.x = 0;
         this.y = 0;
@@ -89,4 +97,12 @@ public class Vector2f{
         return this.x * other.x + this.y * other.y;
     }
 
+    public boolean equals(Vector2f vector2f) {
+        return Math.abs(this.x - vector2f.x) <= 10e-6 &&
+                Math.abs(this.y - vector2f.y) <= 10e-6;
+    }
+
+    public String toString() {
+        return "Vector2f: x = " + this.x + ", y = " + this.y;
+    }
 }

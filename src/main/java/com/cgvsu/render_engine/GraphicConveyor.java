@@ -55,6 +55,7 @@ public class GraphicConveyor {
                 };
         return new Matrix4f(matrix);
     }
+
     public static Matrix4f rotateMatrix4f(float angleX, float angleY, float angleZ) {
         return Matrix4f.multiply(rotateZ(angleZ), Matrix4f.multiply(rotateY(angleY), rotateX(angleX)));
     }
@@ -79,17 +80,9 @@ public class GraphicConveyor {
                 translationMatrix4f(translationX,translationY,translationZ),
                 Matrix4f.multiply(rotateMatrix4f(angleX,angleY,angleZ), scaleMatrix4f(scaleX,scaleY,scaleZ)));
     }
-    // изменить значения, чтобы создать мировую матрицу
-    // TODO: 23.12.2023 исправить этот вонючий костыль
+
     public static Matrix4f rotateScaleTranslate() {
-        float[][] matrix = new float[][]
-                {
-                        {1,0,0,0},
-                        {0,1,0,0},
-                        {0,0,1,0},
-                        {0,0,0,1}
-                };
-        return new Matrix4f(matrix);
+        return rotateScaleTranslate(1,1,1,0,0,0,0,0,0);
     }
 
     public static Matrix4f lookAt(Vector3f eye, Vector3f target) {
