@@ -24,7 +24,7 @@ public class RenderEngine {
             final int height,
             final boolean isActive
     ) {
-        ModelRasterizer.rasterizeModel(graphicsContext.getPixelWriter(), mesh.triangulatedCopy, width,height,Color.GRAY);
+//        ModelRasterizer.rasterizeModel(graphicsContext.getPixelWriter(), mesh.triangulatedCopy, width,height,Color.GRAY);
 
         Matrix4f modelMatrix = rotateScaleTranslate();
         Matrix4f viewMatrix = camera.getViewMatrix();
