@@ -1,6 +1,7 @@
 package com.cgvsu.controllers;
 
 
+import com.cgvsu.log.Statuses;
 import com.cgvsu.math.Vector3f;
 import com.cgvsu.model.Model;
 import com.cgvsu.render_engine.Camera;
@@ -8,6 +9,8 @@ import com.cgvsu.render_engine.RenderEngine;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -50,7 +53,8 @@ public class GuiController {
     @FXML
     private ScrollPane consoleScroll;
 
-    @FXML ScrollPane manipulationsScroll;
+    @FXML
+    ScrollPane manipulationsScroll;
 
     @FXML
     private Button toggleMenu;
@@ -68,6 +72,37 @@ public class GuiController {
     private Button toggleConsoleBtn;
 
     @FXML
+    private Button applyBtn;
+
+    @FXML
+    private Spinner<Double> scaleX;
+
+    @FXML
+    private Spinner<Double> scaleY;
+
+    @FXML
+    private Spinner<Double> scaleZ;
+
+    @FXML
+    private Spinner<Double> rotateX;
+
+    @FXML
+    private Spinner<Double> rotateY;
+
+    @FXML
+    private Spinner<Double> rotateZ;
+
+    @FXML
+    private Spinner<Double> translateX;
+
+    @FXML
+    private Spinner<Double> translateY;
+
+    @FXML
+    private Spinner<Double> translateZ;
+
+
+    @FXML
     private TextField indicesText;
 
     @FXML
@@ -82,6 +117,7 @@ public class GuiController {
     ModelController modelController;
     ConsoleController consoleController;
     LogController logController;
+    MoveController moveController;
 
     private boolean isMenuClosed = false;
     private boolean isManipulationsClosed = false;
@@ -112,6 +148,8 @@ public class GuiController {
         modelController = new ModelController(this, anchorPane, models);
         consoleController = new ConsoleController(mainSplit, toggleConsoleBtn);
         logController = new LogController(console, consolePane, consoleScroll);
+        moveController = new MoveController(scaleX, scaleY, scaleZ, rotateX, rotateY, rotateZ,
+                translateX, translateY, translateZ);
 
         onMouseToggleConsoleClick();
         onMouseToggleMenuClick();
@@ -213,6 +251,15 @@ public class GuiController {
     private void onDelKeyClick(KeyEvent key) {
         if (key.getCode() == KeyCode.DELETE) {
             modelController.removeSelectedModels();
+        }
+    }
+
+    @FXML
+    private void onMouseApplyBtnClick() {
+        try {
+            moveController.apply(modelController.getSelectedModels());
+        } catch (Exception exception) {
+            logController.addLog(exception.getMessage(), Statuses.ERROR);
         }
     }
 
