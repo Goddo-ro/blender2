@@ -224,7 +224,7 @@ public class ModelController {
 
     void triangulateModels() {
         try {
-            List<Model> selectedModels = root.modelController.getSelectedModels();
+            List<Model> selectedModels = getSelectedModels();
             if (selectedModels.size() == 0) {
                 root.logController.addLog("Models haven't been triangulated as there is no selected models", Statuses.WARNING);
                 return;
@@ -244,7 +244,7 @@ public class ModelController {
     void deleteVertices() {
         // TODO: not change vertices if some of them are greater than max index
         try {
-            List<TreeItem<String>> selectedModels = root.modelController.getSelectedModelsNames();
+            List<TreeItem<String>> selectedModels = getSelectedModelsNames();
             if (selectedModels.size() == 0) {
                 root.logController.addLog("Polygons haven't been deleted as there is no selected models", Statuses.WARNING);
                 return;
@@ -272,7 +272,7 @@ public class ModelController {
 
     void deletePolygons() {
         try {
-            List<TreeItem<String>> selectedModels = root.modelController.getSelectedModelsNames();
+            List<TreeItem<String>> selectedModels = getSelectedModelsNames();
             if (selectedModels.size() == 0) {
                 root.logController.addLog("Indices haven't been deleted as there is no selected models", Statuses.WARNING);
                 return;

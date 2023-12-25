@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -15,6 +18,9 @@
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
@@ -72,6 +78,9 @@
                         <font>
                            <Font name="Monospaced Bold" size="12.0" />
                         </font>
+                        <cursor>
+                           <Cursor fx:constant="HAND" />
+                        </cursor>
                      </Button>
                   </top>
                   <center>
@@ -87,6 +96,9 @@
                         <font>
                            <Font name="Monospaced Bold" size="12.0" />
                         </font>
+                        <cursor>
+                           <Cursor fx:constant="HAND" />
+                        </cursor>
                      </Button>
                   </top>
                   <opaqueInsets>
@@ -101,18 +113,77 @@
                                    <tabs>
                                      <Tab text="Move">
                                        <content>
-                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                                <children>
+                                                   <GridPane alignment="TOP_CENTER" gridLinesVisible="true" layoutX="43.0" layoutY="14.0" prefHeight="107.0" prefWidth="257.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
+                                                     <columnConstraints>
+                                                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="110.0" minWidth="10.0" prefWidth="110.0" />
+                                                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="85.0" minWidth="10.0" prefWidth="20.0" />
+                                                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="85.0" minWidth="10.0" prefWidth="20.0" />
+                                                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="87.0" minWidth="10.0" prefWidth="20.0" />
+                                                     </columnConstraints>
+                                                     <rowConstraints>
+                                                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                     </rowConstraints>
+                                                      <children>
+                                                         <Label style="-fx-text-fill: #ffffff;" text="Scale" textAlignment="CENTER" GridPane.rowIndex="1">
+                                                            <GridPane.margin>
+                                                               <Insets left="6.0" />
+                                                            </GridPane.margin>
+                                                         </Label>
+                                                         <Label style="-fx-text-fill: #ffffff;" text="Rotate" textAlignment="CENTER" GridPane.rowIndex="2">
+                                                            <GridPane.margin>
+                                                               <Insets left="6.0" />
+                                                            </GridPane.margin>
+                                                         </Label>
+                                                         <Label style="-fx-text-fill: #ffffff;" text="Translate" textAlignment="CENTER" GridPane.rowIndex="3">
+                                                            <GridPane.margin>
+                                                               <Insets left="6.0" />
+                                                            </GridPane.margin>
+                                                         </Label>
+                                                         <Label contentDisplay="CENTER" style="-fx-text-fill: #ffffff;" text="X" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                                                         <Label style="-fx-text-fill: #ffffff;" text="Y" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                                                         <Label style="-fx-text-fill: #ffffff;" text="Z" textAlignment="CENTER" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                                                         <Spinner fx:id="scaleX" editable="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                         <Spinner fx:id="scaleY" editable="true" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                                                         <Spinner fx:id="scaleZ" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                                                         <Spinner fx:id="rotateX" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                         <Spinner fx:id="rotateY" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                                                         <Spinner fx:id="rotateZ" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                                                         <Spinner fx:id="translateX" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                         <Spinner fx:id="translateY" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                                                         <Spinner fx:id="translateZ" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                                                      </children>
+                                                   </GridPane>
+                                                   <Button fx:id="applyBtn" layoutX="14.0" layoutY="132.0" mnemonicParsing="false" onMouseClicked="#onMouseApplyBtnClick" prefHeight="25.0" prefWidth="257.0" text="Apply" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="132.0">
+                                                      <cursor>
+                                                         <Cursor fx:constant="HAND" />
+                                                      </cursor>
+                                                   </Button>
+                                                </children></AnchorPane>
                                        </content>
                                      </Tab>
                                        <Tab text="Change">
                                          <content>
                                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                                 <children>
-                                                   <Button fx:id="triangulateBtn" layoutX="14.0" layoutY="187.0" mnemonicParsing="false" onMouseClicked="#onMouseTriangulateClick" prefHeight="25.0" prefWidth="300.0" text="Triangulate Models" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" />
+                                                   <Button fx:id="triangulateBtn" layoutX="14.0" layoutY="187.0" mnemonicParsing="false" onMouseClicked="#onMouseTriangulateClick" prefHeight="25.0" prefWidth="300.0" text="Triangulate Models" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0">
+                                                      <cursor>
+                                                         <Cursor fx:constant="HAND" />
+                                                      </cursor></Button>
                                                    <TextField fx:id="indicesText" layoutX="14.0" layoutY="41.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" />
                                                    <Text layoutX="14.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-fill: #ffffff;" text="Enter indices separated by spaces" wrappingWidth="268.13671875" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="15.86328125" />
-                                                   <Button fx:id="deleteVerticesBtn" layoutX="14.0" layoutY="79.0" mnemonicParsing="false" onMouseClicked="#onMouseDelVerticesClick" prefHeight="25.0" prefWidth="269.0" text="Delete vertices" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" />
-                                                   <Button fx:id="deletePolygonsBtn" layoutX="14.0" layoutY="117.0" mnemonicParsing="false" onMouseClicked="#onMouseDelPolygonsClick" prefHeight="25.0" prefWidth="269.0" text="Delete polygons" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" />
+                                                   <Button fx:id="deleteVerticesBtn" layoutX="14.0" layoutY="79.0" mnemonicParsing="false" onMouseClicked="#onMouseDelVerticesClick" prefHeight="25.0" prefWidth="269.0" text="Delete vertices" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0">
+                                                      <cursor>
+                                                         <Cursor fx:constant="HAND" />
+                                                      </cursor></Button>
+                                                   <Button fx:id="deletePolygonsBtn" layoutX="14.0" layoutY="117.0" mnemonicParsing="false" onMouseClicked="#onMouseDelPolygonsClick" prefHeight="25.0" prefWidth="269.0" text="Delete polygons" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0">
+                                                      <cursor>
+                                                         <Cursor fx:constant="HAND" />
+                                                      </cursor></Button>
                                                    <Text layoutX="15.0" layoutY="173.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-fill: #ffffff;" text="Triangulation:" wrappingWidth="268.13671875" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" />
                                                 </children>
                                              </AnchorPane>
@@ -139,6 +210,9 @@
                         <font>
                            <Font name="Monospaced Bold" size="12.0" />
                         </font>
+                        <cursor>
+                           <Cursor fx:constant="HAND" />
+                        </cursor>
                      </Button>
                   </top>
                   <center>
