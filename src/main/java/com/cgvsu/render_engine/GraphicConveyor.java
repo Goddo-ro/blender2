@@ -100,10 +100,10 @@ public class GraphicConveyor {
 
         float[][] matrix = new float[][]
                 {
-                    {resultXN.getX(), resultYN.getX(), resultZN.getX(), 0},
-                    {resultXN.getY(), resultYN.getY(), resultZN.getY(), 0},
-                    {resultXN.getZ(), resultYN.getZ(), resultZN.getZ(), 0},
-                    {-resultXN.dot(eye), -resultYN.dot(eye), -resultZN.dot(eye), 1}
+                    {resultXN.getX(), resultYN.getX(), resultZN.getX(), -resultXN.dot(eye)},
+                    {resultXN.getY(), resultYN.getY(), resultZN.getY(), -resultYN.dot(eye)},
+                    {resultXN.getZ(), resultYN.getZ(), resultZN.getZ(), -resultZN.dot(eye)},
+                    {0, 0, 0, 1}
                 };
         return new Matrix4f(matrix);
     }
@@ -114,33 +114,14 @@ public class GraphicConveyor {
             final float nearPlane,
             final float farPlane) {
         Matrix4f result = new Matrix4f();
+        // Господи, за что ты так со мной, зачем нам нужен этот 0.5F ???
         float tangentMinusOnDegree = (float) (1.0F / (Math.tan(fov * 0.5F)));
-        result.setValue(0,0,tangentMinusOnDegree / aspectRatio);
-        result.setValue(1,1,tangentMinusOnDegree);
+        result.setValue(0,0,tangentMinusOnDegree);
+        result.setValue(1,1,tangentMinusOnDegree / aspectRatio);
         result.setValue(2,2,(farPlane + nearPlane) / (farPlane - nearPlane));
-        result.setValue(2,3,1.0F);
-        result.setValue(3,2,2 * (nearPlane * farPlane) / (nearPlane - farPlane));
+        result.setValue(2,3,2 * (nearPlane * farPlane) / (nearPlane - farPlane));
+        result.setValue(3,2,1.0F);
         return result;
-    }
-
-    public static Vector3f multiplyMatrix4ByVector3(final Matrix4f matrix, final Vector3f vertex) {
-        final float x = (vertex.getX() * matrix.getValue(0,0))
-                + (vertex.getY() * matrix.getValue(1,0))
-                + (vertex.getZ() * matrix.getValue(2,0))
-                + matrix.getValue(3,0);
-        final float y = (vertex.getX() * matrix.getValue(0,1))
-                + (vertex.getY() * matrix.getValue(1,1))
-                + (vertex.getZ() * matrix.getValue(2,1))
-                + matrix.getValue(3,1);
-        final float z = (vertex.getX() * matrix.getValue(0,2))
-                + (vertex.getY() * matrix.getValue(1,2))
-                + (vertex.getZ() * matrix.getValue(2,2))
-                + matrix.getValue(3,2);
-        final float w = (vertex.getX() * matrix.getValue(0,3))
-                + (vertex.getY() * matrix.getValue(1,3))
-                + (vertex.getZ() * matrix.getValue(2,3))
-                + matrix.getValue(3,3);
-        return new Vector3f(x / w, y / w, z / w);
     }
 
     public static Point2f vertexToPoint(final Vector3f vertex, final int width, final int height) {

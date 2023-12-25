@@ -107,6 +107,14 @@ public class Vector4f {
                 this.w * normalization
         );
     }
+
+    public Vector3f normalizeTo3f() {
+        return new Vector3f(
+                this.x / this.w,
+                this.y / this.w,
+                this.z / this.w
+        );
+    }
     //Скалярное произведение векторов
     public float dot(Vector4f other){
         return this.x * other.x + this.y * other.y + this.z * other.z + this.w * other.w;

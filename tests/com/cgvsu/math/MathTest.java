@@ -11,6 +11,13 @@ import java.util.Arrays;
 public class MathTest {
 
     @Test
+    public void testPerspective() {
+        Matrix4f matrix4f = GraphicConveyor.perspective(45,2,1,2);
+        Matrix4f excepted = new Matrix4f();
+        Assertions.assertTrue(matrix4f.equals(excepted), Arrays.deepToString(matrix4f.getMatrix()));
+    }
+
+    @Test
     public void testNormalization01() {
         Vector3f vector3fB = new Vector3f(1,2,2);
         Vector3f vector3f = vector3fB.normalize();

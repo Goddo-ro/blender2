@@ -122,7 +122,8 @@ public class GuiController {
             double height = canvas.getHeight();
 
             canvas.getGraphicsContext2D().clearRect(0, 0, width, height);
-            camera.setAspectRatio((float) (width / height));
+//            camera.setAspectRatio((float) (width / height));
+            camera.setAspectRatio((float) (height / width));
 
             toggleConsoleBtn.setPrefWidth(width);
             console.setMinHeight(consoleSplit.getHeight() - consoleController.CLOSED_CONSOLE_POSITION - 5);
