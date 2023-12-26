@@ -9,6 +9,9 @@ import com.cgvsu.math.Vector3f;
 import com.cgvsu.model.Triangle;
 
 import com.cgvsu.utils.models_utils.Triangulation;
+import com.cgvsu.math.Vector3f;
+import com.cgvsu.math.Vector2f;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

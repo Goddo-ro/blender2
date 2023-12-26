@@ -8,6 +8,10 @@ import com.cgvsu.model.Triangle;
 import com.cgvsu.utils.models_utils.ModelRasterizer;
 import com.cgvsu.utils.models_utils.Triangulation;
 import com.cgvsu.utils.triangles_utils.TriangleRasterization;
+
+import com.cgvsu.math.Vector4f;
+import com.cgvsu.utils.models_utils.ModelRasterizer;
+
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.paint.Color;
@@ -15,9 +19,6 @@ import javafx.scene.paint.Color;
 import com.cgvsu.model.Model;
 import com.cgvsu.math.Vector3f;
 import com.cgvsu.math.matrix.Matrix4f;
-
-//import javax.vecmath.Matrix4f;
-//import javax.vecmath.Vector3f;
 
 import javax.vecmath.Point2f;
 
@@ -34,13 +35,17 @@ public class RenderEngine {
             final int height,
             final boolean isActive
     ) {
+
 //        ModelRasterizer.rasterizeModel(graphicsContext,Triangulation.getTriangulatedModel(mesh), width, height, Color.RED);
+
+//        ModelRasterizer.rasterizeModel(graphicsContext.getPixelWriter(), mesh.triangulatedCopy, width,height,Color.GRAY);
+
+
         Matrix4f modelMatrix = rotateScaleTranslate();
         Matrix4f viewMatrix = camera.getViewMatrix();
         Matrix4f projectionMatrix = camera.getProjectionMatrix();
 
-        Matrix4f modelViewMatrix = modelMatrix.multiply(viewMatrix);
-        Matrix4f modelViewProjectionMatrix = modelViewMatrix.multiply(projectionMatrix);
+        Matrix4f modelViewProjectionMatrix = Matrix4f.multiply(projectionMatrix, Matrix4f.multiply(viewMatrix, modelMatrix));
 
 
         for (Polygon polygon: mesh.polygons
@@ -80,9 +85,10 @@ public class RenderEngine {
             for (int vertexInPolygonInd = 0; vertexInPolygonInd < nVerticesInPolygon; ++vertexInPolygonInd) {
                 Vector3f vertex = mesh.vertices.get(mesh.polygons.get(polygonInd).getVertexIndices().get(vertexInPolygonInd));
 
-                Vector3f vertexVecmath = new Vector3f(vertex.getX(), vertex.getY(), vertex.getZ());
+                // TODO: 25.12.2023 Убрать этот костыль
+                Vector4f vertexVecmath = new Vector4f(vertex.getX(), vertex.getY(), vertex.getZ(), 1);
 
-                Point2f resultPoint = vertexToPoint(multiplyMatrix4ByVector3(modelViewProjectionMatrix, vertexVecmath), width, height);
+                Point2f resultPoint = vertexToPoint(Matrix4f.multiply(modelViewProjectionMatrix, vertexVecmath).normalizeTo3f(), width, height);
                 resultPoints.add(resultPoint);
             }
 
