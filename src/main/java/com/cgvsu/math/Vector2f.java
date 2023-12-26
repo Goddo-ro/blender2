@@ -44,6 +44,14 @@ public class Vector2f{
         throw new IllegalArgumentException("Index out of bounds");
     }
 
+    public void setX (float x) {
+        this.x = x;
+    }
+
+    public void setY (float y) {
+        this.y = y;
+    }
+
     //Сложение векторов
     public Vector2f add(Vector2f other){
         return(new Vector2f(this.x + other.x, this.y + other.y));

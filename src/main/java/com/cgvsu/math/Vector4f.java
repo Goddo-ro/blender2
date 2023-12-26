@@ -53,6 +53,23 @@ public class Vector4f {
         }
         throw new IllegalArgumentException("Индекс выходит за границы");
     }
+
+    public void setX (float x) {
+        this.x = x;
+    }
+
+    public void setY (float y) {
+        this.y = y;
+    }
+
+    public void setZ (float z) {
+        this.z = z;
+    }
+
+    public void setW (float w) {
+        this.w = w;
+    }
+
     // Сложение векторов
     public Vector4f add(Vector4f other) {
         return new Vector4f(this.x + other.x, this.y + other.y, this.z + other.z, this.w + other.w);

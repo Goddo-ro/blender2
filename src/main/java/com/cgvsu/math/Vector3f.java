@@ -46,6 +46,18 @@ public class Vector3f{
         throw new IllegalArgumentException("Index out of bounds");
     }
 
+    public void setX (float x) {
+        this.x = x;
+    }
+
+    public void setY (float y) {
+        this.y = y;
+    }
+
+    public void setZ (float z) {
+        this.z = z;
+    }
+
     public void add(Vector3f other){
         this.x += other.x;
         this.y += other.y;
