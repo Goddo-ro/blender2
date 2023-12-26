@@ -36,6 +36,6 @@ public class MutableColor {
         int r = (int) (red * 255) << 16;
         int g = (int) (green * 255) << 8;
         int b = (int) (blue * 255);
-        return a | r | g | b;
+            return a | r | g | b;
     }
 }
