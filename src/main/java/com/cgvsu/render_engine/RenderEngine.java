@@ -35,11 +35,11 @@ public class RenderEngine {
         if (isActive) {
             graphicsContext.setStroke(new Color(0, 0.67, 0.71, 1));
         } else {
-            graphicsContext.setStroke(Color.BLACK);
+            graphicsContext.setStroke(mesh.color);
         }
 
         switch (renderType) {
-            case RASTERIZATION -> rasterizeModel(graphicsContext, mesh.triangulatedCopy, modelViewProjectionMatrix, width, height, Color.BISQUE, buffer);
+            case RASTERIZATION -> rasterizeModel(graphicsContext, mesh.triangulatedCopy, modelViewProjectionMatrix, width, height, buffer);
             default -> drawMesh(graphicsContext, mesh, modelViewProjectionMatrix, width, height);
         }
     }

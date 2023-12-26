@@ -28,7 +28,7 @@ import static com.cgvsu.render_engine.GraphicConveyor.rotateScaleTranslate;
 
 
 public class ModelRasterizer {
-    public static void rasterizeModel(GraphicsContext gc, TriPolyModel model, Matrix4f modelViewProjectionMatrix,int width, int height, Color color, ArrayList<ArrayList<Float>> buffer){
+    public static void rasterizeModel(GraphicsContext gc, TriPolyModel model, Matrix4f modelViewProjectionMatrix,int width, int height, ArrayList<ArrayList<Float>> buffer){
 
 //        Color[][] frameBuffer = FrameBuffer.getDefaultPixelColorBuffer(width, height);
         Map<Vector2f, Float> depthMap = new HashMap<>();
@@ -51,7 +51,7 @@ public class ModelRasterizer {
             }
 
             BufferedTriangleRasterization.drawTriangle(gc, depthMap, points.get(0), points.get(1), points.get(2),
-                    buffer, color);
+                    buffer, model.color);
 //            TriangleRasterization.drawTriangle(gc, points, Color.RED);
 
         }

@@ -20,8 +20,10 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import org.w3c.dom.ls.LSOutput;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -117,6 +119,9 @@ public class GuiController {
     @FXML
     private SplitMenuButton renderTypeMenu;
 
+    @FXML
+    GridPane modelGrid;
+
     ModelController modelController;
     ConsoleController consoleController;
     LogController logController;
@@ -149,7 +154,7 @@ public class GuiController {
         timeline = new Timeline();
         timeline.setCycleCount(Animation.INDEFINITE);
 
-        modelController = new ModelController(this, anchorPane, models);
+        modelController = new ModelController(this, anchorPane, modelGrid, models);
         consoleController = new ConsoleController(mainSplit, toggleConsoleBtn);
         logController = new LogController(console, consolePane, consoleScroll);
         moveController = new MoveController(scaleX, scaleY, scaleZ, rotateX, rotateY, rotateZ,
@@ -160,12 +165,11 @@ public class GuiController {
         onMouseToggleMenuClick();
         onMouseToggleManipulationsClick();
 
-        KeyFrame frame = new KeyFrame(Duration.millis(15), event -> {
+        KeyFrame frame = new KeyFrame(Duration.millis(100), event -> {
             double width = canvas.getWidth();
             double height = canvas.getHeight();
 
             canvas.getGraphicsContext2D().clearRect(0, 0, width, height);
-//            camera.setAspectRatio((float) (width / height));
             camera.setAspectRatio((float) (height / width));
 
             toggleConsoleBtn.setPrefWidth(width);
@@ -176,14 +180,9 @@ public class GuiController {
                 consolePane.setPrefHeight(console.getHeight());
             }
 
-
-            if (logController.getLogs().size() != console.getChildren().size()) {
-                logController.updateLogs();
-            }
-
             for (Model model : modelController.getModelsList()) {
-                RenderEngine.render(canvas.getGraphicsContext2D(), camera, model,
-                        (int) width, (int) height, modelController.isModelActive(model), renderTypeController.renderType);
+                RenderEngine.render(canvas.getGraphicsContext2D(), camera, model, (int) width, (int) height,
+                        modelController.isModelActive(model), renderTypeController.renderType);
             }
 
             anchorPane.getScene().addPreLayoutPulseListener(() -> {
@@ -207,10 +206,14 @@ public class GuiController {
             toggleMenu.setPrefWidth(OPENED_MENU_WIDTH);
             modelsContainer.setPrefWidth(OPENED_MENU_WIDTH);
             models.setOpacity(1);
+            renderTypeMenu.setOpacity(1);
+            modelGrid.setOpacity(1);
         } else {
             toggleMenu.setText("+");
             modelsContainer.setPrefWidth(CLOSED_MENU_WIDTH);
             models.setOpacity(0);
+            renderTypeMenu.setOpacity(0);
+            modelGrid.setOpacity(0);
         }
 
         isMenuClosed = !isMenuClosed;
