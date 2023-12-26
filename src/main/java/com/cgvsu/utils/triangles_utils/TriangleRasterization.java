@@ -139,7 +139,7 @@ public class TriangleRasterization {
                 r = tmp;
             }
             for (int x = l; x <= r; x++) {
-//                final int colorBits = interpolateColor(x, y, v1, c1, v2, c2, v3, c3, area);
+
                 gc.setStroke(c1);
                 gc.strokeRect(x, y, 1, 1);
             }
