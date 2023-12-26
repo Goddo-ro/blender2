@@ -19,41 +19,74 @@ import static com.cgvsu.math.Vector3f.vertex3fToVector2f;
 import static com.cgvsu.render_engine.GraphicConveyor.vertexToPoint;
 
 public class ModelMeshDrawer {
-    public static void drawMesh(GraphicsContext graphicsContext, Model mesh, Matrix4f modelViewProjectionMatrix, int width, int height, ArrayList<ArrayList<Float>> buffer) {
+    public static void drawMesh(GraphicsContext graphicsContext, Model mesh, Matrix4f modelViewProjectionMatrix, int width, int height) {
         final int nPolygons = mesh.polygons.size();
-//        float[][] buffer = ZBuffer.getDefaultPixelDepthMatrix(width, height);
-//        Color[][] frameBuffer = FrameBuffer.getDefaultPixelColorBuffer(width, height);
-        Map<Vector2f, Float> depthMap = new HashMap<>();
         for (int polygonInd = 0; polygonInd < nPolygons; ++polygonInd) {
             final int nVerticesInPolygon = mesh.polygons.get(polygonInd).getVertexIndices().size();
 
-            ArrayList<Vector2f> resultPoints = new ArrayList<>();
+            ArrayList<Point2f> resultPoints = new ArrayList<>();
             for (int vertexInPolygonInd = 0; vertexInPolygonInd < nVerticesInPolygon; ++vertexInPolygonInd) {
-
                 Vector3f vertex = mesh.vertices.get(mesh.polygons.get(polygonInd).getVertexIndices().get(vertexInPolygonInd));
-                float depth = vertex.getZ();
+
+                // TODO: 25.12.2023 Убрать этот костыль
                 Vector4f vertexVecmath = new Vector4f(vertex.getX(), vertex.getY(), vertex.getZ(), 1);
 
-                Vector2f resultPoint = vertex3fToVector2f(Matrix4f.multiply(modelViewProjectionMatrix, vertexVecmath).normalizeTo3f(), width, height);
+                Point2f resultPoint = vertexToPoint(Matrix4f.multiply(modelViewProjectionMatrix, vertexVecmath).normalizeTo3f(), width, height);
                 resultPoints.add(resultPoint);
-                depthMap.put(resultPoint, depth);
             }
 
             for (int vertexInPolygonInd = 1; vertexInPolygonInd < nVerticesInPolygon; ++vertexInPolygonInd) {
-                LineDrawer.drawLineWithZBuffer(
-                        resultPoints.get(vertexInPolygonInd - 1),
-
-                        resultPoints.get(vertexInPolygonInd), graphicsContext, buffer,depthMap);
+                graphicsContext.strokeLine(
+                        resultPoints.get(vertexInPolygonInd - 1).x,
+                        resultPoints.get(vertexInPolygonInd - 1).y,
+                        resultPoints.get(vertexInPolygonInd).x,
+                        resultPoints.get(vertexInPolygonInd).y);
             }
 
             if (nVerticesInPolygon > 0)
-                LineDrawer.drawLineWithZBuffer(
-                        resultPoints.get(nVerticesInPolygon - 1),
-
-                        resultPoints.get(0),
-                         graphicsContext, buffer, depthMap);
+                graphicsContext.strokeLine(
+                        resultPoints.get(nVerticesInPolygon - 1).x,
+                        resultPoints.get(nVerticesInPolygon - 1).y,
+                        resultPoints.get(0).x,
+                        resultPoints.get(0).y);
 
 
         }
     }
+
+//    public static void drawMesh(GraphicsContext graphicsContext, Model mesh, Matrix4f modelViewProjectionMatrix, int width, int height, ArrayList<ArrayList<Float>> buffer) {
+//        final int nPolygons = mesh.polygons.size();
+////        float[][] buffer = ZBuffer.getDefaultPixelDepthMatrix(width, height);
+////        Color[][] frameBuffer = FrameBuffer.getDefaultPixelColorBuffer(width, height);
+//        Map<Vector2f, Float> depthMap = new HashMap<>();
+//        for (int polygonInd = 0; polygonInd < nPolygons; ++polygonInd) {
+//            final int nVerticesInPolygon = mesh.polygons.get(polygonInd).getVertexIndices().size();
+//
+//            ArrayList<Vector2f> resultPoints = new ArrayList<>();
+//            for (int vertexInPolygonInd = 0; vertexInPolygonInd < nVerticesInPolygon; ++vertexInPolygonInd) {
+//
+//                Vector3f vertex = mesh.vertices.get(mesh.polygons.get(polygonInd).getVertexIndices().get(vertexInPolygonInd));
+//                float depth = vertex.getZ();
+//                Vector4f vertexVecmath = new Vector4f(vertex.getX(), vertex.getY(), vertex.getZ(), 1);
+//
+//                Vector2f resultPoint = vertex3fToVector2f(Matrix4f.multiply(modelViewProjectionMatrix, vertexVecmath).normalizeTo3f(), width, height);
+//                resultPoints.add(resultPoint);
+//                depthMap.put(resultPoint, depth);
+//            }
+//
+//            for (int vertexInPolygonInd = 1; vertexInPolygonInd < nVerticesInPolygon; ++vertexInPolygonInd) {
+//                LineDrawer.drawLineWithZBuffer(
+//                        resultPoints.get(vertexInPolygonInd - 1),
+//
+//                        resultPoints.get(vertexInPolygonInd), graphicsContext, buffer,depthMap);
+//            }
+//
+//            if (nVerticesInPolygon > 0)
+//                LineDrawer.drawLineWithZBuffer(
+//                        resultPoints.get(nVerticesInPolygon - 1),
+//
+//                        resultPoints.get(0),
+//                         graphicsContext, buffer, depthMap);
+//        }
+//    }
 }

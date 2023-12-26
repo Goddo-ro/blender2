@@ -1,30 +1,16 @@
 package com.cgvsu.render_engine;
 
-import java.util.ArrayList;
-
-import com.cgvsu.math.Vector2f;
-import com.cgvsu.model.Polygon;
-import com.cgvsu.model.Triangle;
+import com.cgvsu.math.matrix.Matrix4f;
+import com.cgvsu.model.Model;
 import com.cgvsu.utils.ZBuffer;
-import com.cgvsu.utils.models_utils.ModelMeshDrawer;
-import com.cgvsu.utils.models_utils.ModelRasterizer;
-import com.cgvsu.utils.models_utils.Triangulation;
-import com.cgvsu.utils.triangles_utils.TriangleRasterization;
-
-import com.cgvsu.math.Vector4f;
-import com.cgvsu.utils.models_utils.ModelRasterizer;
-
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.PixelWriter;
 import javafx.scene.paint.Color;
 
-import com.cgvsu.model.Model;
-import com.cgvsu.math.Vector3f;
-import com.cgvsu.math.matrix.Matrix4f;
+import java.util.ArrayList;
 
-import javax.vecmath.Point2f;
-
-import static com.cgvsu.render_engine.GraphicConveyor.*;
+import static com.cgvsu.render_engine.GraphicConveyor.rotateScaleTranslate;
+import static com.cgvsu.utils.models_utils.ModelMeshDrawer.drawMesh;
+import static com.cgvsu.utils.models_utils.ModelRasterizer.rasterizeModel;
 
 
 public class RenderEngine {
@@ -35,9 +21,9 @@ public class RenderEngine {
             final Model mesh,
             final int width,
             final int height,
-            final boolean isActive
+            final boolean isActive,
+            final RenderType renderType
     ) {
-
         Matrix4f modelMatrix = rotateScaleTranslate();
         Matrix4f viewMatrix = camera.getViewMatrix();
         Matrix4f projectionMatrix = camera.getProjectionMatrix();
@@ -45,8 +31,6 @@ public class RenderEngine {
         Matrix4f modelViewProjectionMatrix = Matrix4f.multiply(projectionMatrix, Matrix4f.multiply(viewMatrix, modelMatrix));
 
         ArrayList<ArrayList<Float>> buffer = ZBuffer.getDefaultPixelDepthMatrix(width,height);
-        ModelMeshDrawer.drawMesh(graphicsContext, mesh, modelViewProjectionMatrix, width, height, buffer);
-        ModelRasterizer.rasterizeModel(graphicsContext, mesh.triangulatedCopy, modelViewProjectionMatrix, width, height, Color.BISQUE, buffer);
 
         if (isActive) {
             graphicsContext.setStroke(new Color(0, 0.67, 0.71, 1));
@@ -54,39 +38,9 @@ public class RenderEngine {
             graphicsContext.setStroke(Color.BLACK);
         }
 
-//        final int nPolygons = mesh.polygons.size();
-//        for (int polygonInd = 0; polygonInd < nPolygons; ++polygonInd) {
-//            final int nVerticesInPolygon = mesh.polygons.get(polygonInd).getVertexIndices().size();
-//
-//            ArrayList<Point2f> resultPoints = new ArrayList<>();
-//            for (int vertexInPolygonInd = 0; vertexInPolygonInd < nVerticesInPolygon; ++vertexInPolygonInd) {
-//                Vector3f vertex = mesh.vertices.get(mesh.polygons.get(polygonInd).getVertexIndices().get(vertexInPolygonInd));
-//
-//                // TODO: 25.12.2023 Убрать этот костыль
-//                Vector4f vertexVecmath = new Vector4f(vertex.getX(), vertex.getY(), vertex.getZ(), 1);
-//
-//                Point2f resultPoint = vertexToPoint(Matrix4f.multiply(modelViewProjectionMatrix, vertexVecmath).normalizeTo3f(), width, height);
-//                resultPoints.add(resultPoint);
-//            }
-//
-//            for (int vertexInPolygonInd = 1; vertexInPolygonInd < nVerticesInPolygon; ++vertexInPolygonInd) {
-//                graphicsContext.strokeLine(
-//                        resultPoints.get(vertexInPolygonInd - 1).x,
-//                        resultPoints.get(vertexInPolygonInd - 1).y,
-//                        resultPoints.get(vertexInPolygonInd).x,
-//                        resultPoints.get(vertexInPolygonInd).y);
-//            }
-//
-//            if (nVerticesInPolygon > 0)
-//                graphicsContext.strokeLine(
-//                        resultPoints.get(nVerticesInPolygon - 1).x,
-//                        resultPoints.get(nVerticesInPolygon - 1).y,
-//                        resultPoints.get(0).x,
-//                        resultPoints.get(0).y);
-//
-//
-//        }
-
-
+        switch (renderType) {
+            case RASTERIZATION -> rasterizeModel(graphicsContext, mesh.triangulatedCopy, modelViewProjectionMatrix, width, height, Color.BISQUE, buffer);
+            default -> drawMesh(graphicsContext, mesh, modelViewProjectionMatrix, width, height);
+        }
     }
 }

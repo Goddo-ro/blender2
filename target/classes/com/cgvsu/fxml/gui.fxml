@@ -10,6 +10,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.SplitMenuButton?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -89,6 +90,14 @@
                   <opaqueInsets>
                      <Insets />
                   </opaqueInsets>
+                  <bottom>
+                     <SplitMenuButton fx:id="renderTypeMenu" alignment="CENTER" minWidth="0.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="301.0" text="Render type" BorderPane.alignment="TOP_LEFT">
+                       <items>
+                         <MenuItem mnemonicParsing="false" text="Mesh" />
+                         <MenuItem mnemonicParsing="false" text="Rasterization" />
+                       </items>
+                     </SplitMenuButton>
+                  </bottom>
                </BorderPane>
                <BorderPane fx:id="modelsManipulations" minWidth="25.0" prefHeight="525.0" prefWidth="300.0" style="-fx-background-color: #393E46;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="25.0">
                   <top>

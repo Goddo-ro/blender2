@@ -6,6 +6,7 @@ import com.cgvsu.math.Vector3f;
 import com.cgvsu.model.Model;
 import com.cgvsu.render_engine.Camera;
 import com.cgvsu.render_engine.RenderEngine;
+import com.cgvsu.render_engine.RenderType;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -101,7 +102,6 @@ public class GuiController {
     @FXML
     private Spinner<Double> translateZ;
 
-
     @FXML
     private TextField indicesText;
 
@@ -114,10 +114,14 @@ public class GuiController {
     @FXML
     private VBox console;
 
+    @FXML
+    private SplitMenuButton renderTypeMenu;
+
     ModelController modelController;
     ConsoleController consoleController;
     LogController logController;
     MoveController moveController;
+    RenderTypeController renderTypeController;
 
     private boolean isMenuClosed = false;
     private boolean isManipulationsClosed = false;
@@ -150,6 +154,7 @@ public class GuiController {
         logController = new LogController(console, consolePane, consoleScroll);
         moveController = new MoveController(scaleX, scaleY, scaleZ, rotateX, rotateY, rotateZ,
                 translateX, translateY, translateZ);
+        renderTypeController = new RenderTypeController(renderTypeMenu);
 
         onMouseToggleConsoleClick();
         onMouseToggleMenuClick();
@@ -178,7 +183,7 @@ public class GuiController {
 
             for (Model model : modelController.getModelsList()) {
                 RenderEngine.render(canvas.getGraphicsContext2D(), camera, model,
-                        (int) width, (int) height, modelController.isModelActive(model));
+                        (int) width, (int) height, modelController.isModelActive(model), renderTypeController.renderType);
             }
 
             anchorPane.getScene().addPreLayoutPulseListener(() -> {
