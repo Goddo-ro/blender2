@@ -3,6 +3,7 @@ package com.cgvsu.model;
 import com.cgvsu.math.Vector3f;
 import com.cgvsu.math.Vector2f;
 import com.cgvsu.utils.models_utils.ModelCopy;
+import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 
@@ -15,6 +16,7 @@ public class Model {
     public TriPolyModel triangulatedCopy;
     private Model originModel;
     private String name;
+    public Color color = new Color(0.75, 0.75, 0.75, 1);
 
     public Model(Model model) {
         Model copy = ModelCopy.copyModel(model);
@@ -37,6 +39,12 @@ public class Model {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+        if (triangulatedCopy != null)
+            this.triangulatedCopy.color = color;
     }
 
     public Model getOriginModel () {

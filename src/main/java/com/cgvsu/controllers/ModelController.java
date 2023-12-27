@@ -4,12 +4,18 @@ import com.cgvsu.log.Statuses;
 import com.cgvsu.model.Model;
 import com.cgvsu.objreader.ObjReader;
 import com.cgvsu.objwriter.ObjWriter;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.TilePane;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 
 import java.io.File;
@@ -29,12 +35,15 @@ public class ModelController {
     private final List<Model> modelsList = new ArrayList<>();
     private final TreeView<String> models;
     private final GuiController root;
+    private GridPane modelGrid;
     private AnchorPane anchorPane;
     private MultipleSelectionModel<TreeItem<String>> selectionModel;
+    private Model activeModel = null;
 
-    public ModelController(GuiController root, AnchorPane anchorPane, TreeView<String> models) {
+    public ModelController(GuiController root, AnchorPane anchorPane, GridPane modelGrid, TreeView<String> models) {
         this.root = root;
         this.anchorPane = anchorPane;
+        this.modelGrid = modelGrid;
         this.models = models;
 
         TreeItem<String> rootTreeNode = new TreeItem<>("Objects");
@@ -44,6 +53,47 @@ public class ModelController {
 
         selectionModel = models.getSelectionModel();
         selectionModel.setSelectionMode(SelectionMode.MULTIPLE);
+
+        models.getSelectionModel().selectedItemProperty().addListener( new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observable, Object oldValue,
+                                Object newValue) {
+                TreeItem<String> selectedItem = (TreeItem<String>) newValue;
+                if (selectedItem == null) {
+                    activeModel = null;
+                    clearModelGrid();
+                    return;
+                }
+                updateActiveModel(selectedItem.getValue());
+            }
+        });
+    }
+
+    void updateActiveModel(String modelName) {
+        clearModelGrid();
+        if (modelName.endsWith(".obj")) {
+            activeModel = getModelByName(modelName);
+            clearModelGrid();
+            Label nameLabel = new Label(activeModel.getName());
+            nameLabel.setStyle("-fx-text-fill: #ffffff; -fx-label-padding: 0 0 0 12");
+            modelGrid.add(nameLabel, 1, 0);
+
+            ColorPicker modelColor = new ColorPicker(activeModel.color);
+            modelGrid.add(modelColor, 1, 1);
+
+            modelColor.setOnAction((e) -> {
+                Color color = modelColor.getValue();
+                activeModel.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getOpacity()));
+            });
+        }
+    }
+
+    void clearModelGrid() {
+        if (3 > modelGrid.getChildren().size() - 1)
+            return;
+        for (int i = 3; i < modelGrid.getChildren().size(); i++) {
+            modelGrid.getChildren().set(i, new Label(""));
+        }
     }
 
     List<Model> getModelsList() {
