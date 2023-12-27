@@ -4,6 +4,7 @@ import com.cgvsu.model.Model;
 import com.cgvsu.model.Polygon;
 import com.cgvsu.math.Vector2f;
 import com.cgvsu.math.Vector3f;
+import com.cgvsu.utils.models_utils.ModelCopy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -116,8 +117,9 @@ public class ObjReader {
             }
         }
 
+        Model originModel = ModelCopy.copyModel(result);
+        result.setOriginModel(originModel);
 
-        
         return result;
     }
 
